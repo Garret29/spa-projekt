@@ -1,15 +1,107 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <title>SPA Projekt</title>
 </head>
+
 <body>
-    
+
+    <input type="radio" name="extension" value="0" checked> JSON
+    <input type="radio" name="extension" value="1"> CSV
+    <input type="radio" name="extension" value="2"> Android Studio
+    <input type="radio" name="extension" value="3"> Visual Studio (UWP)
+    <input type="file" name="loader" accept=".txt,.json,.xml,.csv,.resw">
+
+    <div id="grid">
+
+    </div>
+
+    <input type="radio" name="saveAs" value="0" checked> JSON
+    <input type="radio" name="saveAs" value="1"> CSV
+    <input type="radio" name="saveAs" value="2"> Android Studio
+    <input type="radio" name="saveAs" value="3"> Visual Studio (UWP)
+
+    <input class="btn btn-default" type="button" id="generate" value="Generuj">
+    <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+
+    <script>
+        $.ajax({
+            url: 'resources.json',
+            success: function (response) {
+                gridManager.createGrid(response);
+            }
+        });
+
+        var gridManager = {
+            createGrid: function (data) {
+
+                var grid = document.getElementById('grid');
+
+                var table = this.createNamesColumn(grid, data);
+                for (var i = 0, k = data.langs.length; i < k; i++)
+                    this.addColumn(table, data.langs[i]);
+
+                this.showComboBoxAddLang();
+            },
+            createNamesColumn: function (div, data) {
+                if (data != null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
+                    
+                    var table = document.createElement('table');
+                    // table.className = 'table table-bordered table-condensed';
+                    for (var i = 0, k = data.langs[0].resources.length; i < k; i++) {
+
+                        var row = document.createElement('tr');
+                        var cell = document.createElement('td');
+                        var input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'form-control';
+                        input.value = data.langs[0].resources[i].name;
+
+                        cell.appendChild(input);
+                        row.appendChild(cell);
+                        table.appendChild(row);
+                    }
+                    div.appendChild(table);
+                    return table;
+                }
+            },
+            addColumn: function (table, langObject) {
+
+                for (var i = 0; i < table.rows.length; i++) {
+
+                    var input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'form-control';
+                    input.value = langObject.resources[i].translation;
+                    table.rows[i].insertCell(table.rows[i].cells.length).appendChild(input);
+                }
+            },
+            showComboBoxAddLang: function () {
+                var table = document.querySelector('table');
+
+                var optionsText = ['Dodaj język', 'polski', 'angielski', 'niemiecki'];
+                var optionsValue = ['', 'pl', 'en', 'de'];
+
+                var select = document.createElement("select");
+                select.className = 'form-control';
+                select.name = 'languages';
+
+                for (var i = 0; i < optionsValue.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = optionsValue[i];
+                    option.text = optionsText[i];
+                    select.appendChild(option);
+                }
+                table.rows[0].insertCell(-1).appendChild(select);
+            }
+        }
+    </script>
 </body>
+
 </html>
