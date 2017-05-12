@@ -31,9 +31,11 @@
     <input class="btn btn-default" type="button" id="share" value="Udostępnij">
 
     <script>
+        var lol;
         $.ajax({
             url: 'resources.json',
             success: function (response) {
+                lol = response;
                 gridManager.createGrid(response);
             }
         });
@@ -51,19 +53,25 @@
             },
             createNamesColumn: function (div, data) {
                 if (data != null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
-                    
+
                     var table = document.createElement('table');
                     // table.className = 'table table-bordered table-condensed';
-                    for (var i = 0, k = data.langs[0].resources.length; i < k; i++) {
+                    for (var i = -1, k = data.langs[0].resources.length; i < k; i++) {
 
                         var row = document.createElement('tr');
-                        var cell = document.createElement('td');
-                        var input = document.createElement('input');
-                        input.type = 'text';
-                        input.className = 'form-control';
-                        input.value = data.langs[0].resources[i].name;
 
-                        cell.appendChild(input);
+                        var cell = document.createElement('td');
+                        if (i < 0) {
+                            var cellText = document.createTextNode('name');
+                            cell.appendChild(cellText);
+                        } else {
+                            var input = document.createElement('input');
+                            input.value = data.langs[0].resources[i].name;
+                            input.type = 'text';
+                            input.className = 'form-control';
+                            cell.appendChild(input);
+                        }
+
                         row.appendChild(cell);
                         table.appendChild(row);
                     }
@@ -72,14 +80,19 @@
                 }
             },
             addColumn: function (table, langObject) {
-
+                
                 for (var i = 0; i < table.rows.length; i++) {
 
-                    var input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'form-control';
-                    input.value = langObject.resources[i].translation;
-                    table.rows[i].insertCell(table.rows[i].cells.length).appendChild(input);
+                    var element;
+                    if (i < 1) {
+                        element = document.createTextNode(langObject.lang)
+                    } else {
+                        element = document.createElement('input');
+                        element.type = 'text';
+                        element.className = 'form-control';
+                        element.value = langObject.resources[i-1].translation;
+                    }
+                    table.rows[i].insertCell(table.rows[i].cells.length).appendChild(element);
                 }
             },
             showComboBoxAddLang: function () {
