@@ -84,9 +84,35 @@
             },
             showComboBoxAddLang: function () {
                 var table = document.querySelector('table');
-
-                var optionsText = ['Dodaj język', 'polski', 'angielski', 'niemiecki'];
-                var optionsValue = ['', 'pl', 'en', 'de'];
+                
+                var optionsText = [
+                    "Dodaj język",
+                    "angielski",
+                    "francuski",
+                    "hiszpański",
+                    "niemiecki",
+                    "norweski",
+                    "polski",
+                    "portugalski",
+                    "rosyjski",
+                    "szwedzki",
+                    "ukraiński",
+                    "włoski"
+                ];
+                var optionsValue = [
+                    "",
+                    "en",
+                    "fr",
+                    "es",
+                    "de",
+                    "no",
+                    "pl",
+                    "pt",
+                    "ru",
+                    "sv",
+                    "uk",
+                    "it"
+                ];
 
                 var select = document.createElement("select");
                 select.className = 'form-control';
