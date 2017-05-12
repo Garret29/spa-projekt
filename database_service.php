@@ -7,9 +7,7 @@ if (isset($_GET['q']) && is_numeric($_GET['q'])) {
     $id = $_GET['q'];
 
     require_once 'SQLite_Database.php';
-    $oDatabase = new SQLite_Database();
-    $oDatabase->connectDataBase();
-    $oDatabase->createTableIfNotExists();
+    $oDatabase = SQLite_Database::prepareDatabase();
 
     if ($row = $oDatabase->getRecordAssocById($id)) 
         echo json_encode($row);
@@ -24,9 +22,7 @@ if (isset($_GET['q']) && is_numeric($_GET['q'])) {
     $row['serializedContent'] = $_POST['serializedContent'];
 
     require_once 'SQLite_Database.php';
-    $oDatabase = new SQLite_Database();
-    $oDatabase->connectDataBase();
-    $oDatabase->createTableIfNotExists();
+    $oDatabase = SQLite_Database::prepareDatabase();
 
     $result['lastId'] = $oDatabase->addRecordAndGetHisId($row);
     echo json_encode($result);

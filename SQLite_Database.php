@@ -45,6 +45,13 @@ class SQLite_Database {
         $query->execute();
         return $this->pdo->lastInsertId();
     }
+
+    public static function prepareDatabase() {
+        $oDatabase = new SQLite_Database();
+        $oDatabase->connectDataBase();
+        $oDatabase->createTableIfNotExists();
+        return $oDatabase;
+    }
 }
 
 ?>
