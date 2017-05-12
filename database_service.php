@@ -5,15 +5,30 @@ header("Content-Type: application/json; charset=UTF-8");
 if (isset($_GET['q']) && is_numeric($_GET['q'])) {
 
     $id = $_GET['q'];
-    
-    $result['response'] = "GET: " . $id;
-    echo json_encode($result);
 
-} else if (isset($_POST['serializedContent'])) {
+    require_once 'SQLite_Database.php';
+    $oDatabase = new SQLite_Database();
+    $oDatabase->connectDataBase();
+    $oDatabase->createTableIfNotExists();
 
+    if ($row = $oDatabase->getRecordAssocById($id)) 
+        echo json_encode($row);
+    else {
+        $result['response'] = "Nie ma zapisanego rekordu o takim id.";
+        echo json_encode($result);
+    }
+
+} else if (isset($_POST['serializedContent']) && isset($_POST['password'])) {
+
+    $row['password'] = $_POST['password'];
     $row['serializedContent'] = $_POST['serializedContent'];
 
-    $result['response'] = "POST: " . $row['serializedContent'];
+    require_once 'SQLite_Database.php';
+    $oDatabase = new SQLite_Database();
+    $oDatabase->connectDataBase();
+    $oDatabase->createTableIfNotExists();
+
+    $result['lastId'] = $oDatabase->addRecordAndGetHisId($row);
     echo json_encode($result);
 
 } else {
