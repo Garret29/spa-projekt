@@ -18,8 +18,28 @@
     <input type="radio" name="extension" value="3"> Visual Studio (UWP)
     <input type="file" name="loader" accept=".txt,.json,.xml,.csv,.resw">
 
-    <div id="grid">
-
+    <div>
+        <table id="grid">
+            <tr>
+                <td>name</td>
+                <td>
+                    <select id="lang-select">
+                        <option value="">Dodaj język</option>
+                        <option value="en">angielski</option>
+                        <option value="fr">francuski</option>
+                        <option value="es">hiszpański</option>
+                        <option value="de">niemiecki</option>
+                        <option value="no">norweski</option>
+                        <option value="pl">polski</option>
+                        <option value="pt">portugalski</option>
+                        <option value="ru">rosyjski</option>
+                        <option value="sv">szwedzki</option>
+                        <option value="uk">ukraiński</option>
+                        <option value="it">włoski</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <input type="radio" name="saveAs" value="0" checked> JSON
@@ -31,102 +51,90 @@
     <input class="btn btn-default" type="button" id="share" value="Udostępnij">
 
     <script>
+
         $.ajax({
             url: 'resources.json',
             success: function (response) {
-                gridManager.createGrid(response);
+                gridManager.loadData(response);
             }
         });
 
         var gridManager = {
-            createGrid: function (data) {
+            loadData: function (data) {
 
-                var grid = document.getElementById('grid');
+                var table = document.getElementById('grid');
 
-                var table = this.createNamesColumn(grid, data);
+                this.createNamesColumn(grid, data);
                 for (var i = 0, k = data.langs.length; i < k; i++)
-                    this.addColumn(table, data.langs[i]);
-
-                this.showComboBoxAddLang();
-            },
-            createNamesColumn: function (div, data) {
-                if (data != null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
+                    this.addColumn(table, data.langs[i].lang, data.langs[i].resources);
                     
-                    var table = document.createElement('table');
-                    // table.className = 'table table-bordered table-condensed';
+                this.addRow(table);
+            },
+            createNamesColumn: function (table, data) {
+                if (data != null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
+
                     for (var i = 0, k = data.langs[0].resources.length; i < k; i++) {
 
                         var row = document.createElement('tr');
                         var cell = document.createElement('td');
                         var input = document.createElement('input');
+                        input.value = data.langs[0].resources[i].name;
                         input.type = 'text';
                         input.className = 'form-control';
-                        input.value = data.langs[0].resources[i].name;
-
                         cell.appendChild(input);
                         row.appendChild(cell);
                         table.appendChild(row);
                     }
-                    div.appendChild(table);
-                    return table;
                 }
             },
-            addColumn: function (table, langObject) {
+            addColumn: function (table, lang, resources) {
 
                 for (var i = 0; i < table.rows.length; i++) {
 
+                    var element;
+                    if (i < 1) {
+                        element = document.createTextNode(lang)
+                        table.rows[i].insertCell(table.rows[i].cells.length - 1).appendChild(element);
+                    } else {
+                        element = document.createElement('input');
+                        element.type = 'text';
+                        element.className = 'form-control';
+                        element.value = (typeof resources === 'undefined') ? "" : resources[i - 1].translation;
+                        table.rows[i].insertCell(table.rows[i].cells.length).appendChild(element);
+                    }
+                }
+            },
+            addRow: function funkcja(table) {
+                var row = table.insertRow(table.rows.length);
+
+                for (var i = 0; i < table.rows[0].cells.length - 1; i++) {
                     var input = document.createElement('input');
                     input.type = 'text';
                     input.className = 'form-control';
-                    input.value = langObject.resources[i].translation;
-                    table.rows[i].insertCell(table.rows[i].cells.length).appendChild(input);
+                    if (i == 0) {
+                        var clicked = false;
+                        input.addEventListener('input', function () {
+                            if (!clicked) {
+                                clicked = true;
+                                funkcja(table);
+                            }
+                        });
+                    }
+                    row.insertCell(i).appendChild(input);
                 }
-            },
-            showComboBoxAddLang: function () {
-                var table = document.querySelector('table');
-                
-                var optionsText = [
-                    "Dodaj język",
-                    "angielski",
-                    "francuski",
-                    "hiszpański",
-                    "niemiecki",
-                    "norweski",
-                    "polski",
-                    "portugalski",
-                    "rosyjski",
-                    "szwedzki",
-                    "ukraiński",
-                    "włoski"
-                ];
-                var optionsValue = [
-                    "",
-                    "en",
-                    "fr",
-                    "es",
-                    "de",
-                    "no",
-                    "pl",
-                    "pt",
-                    "ru",
-                    "sv",
-                    "uk",
-                    "it"
-                ];
-
-                var select = document.createElement("select");
-                select.className = 'form-control';
-                select.name = 'languages';
-
-                for (var i = 0; i < optionsValue.length; i++) {
-                    var option = document.createElement("option");
-                    option.value = optionsValue[i];
-                    option.text = optionsText[i];
-                    select.appendChild(option);
-                }
-                table.rows[0].insertCell(-1).appendChild(select);
             }
         }
+
+        // var table = document.getElementById('grid');
+        // gridManager.addRow(table);
+
+        document.getElementById('lang-select').addEventListener('change', function () {
+            if (this.value != "") {
+                var table = document.getElementById('grid');
+                gridManager.addColumn(table, this.value);
+            }
+        });
+
     </script>
 </body>
 
