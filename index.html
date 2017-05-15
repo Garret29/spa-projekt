@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,33 +10,56 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <title>SPA Projekt</title>
 </head>
+
 <body>
-    
-    <div class="container">
+
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-4">
-                <h1>SPA Projekt</h1>
-            </div>
-            <div class="col-md-8">
-                <label class="radio-inline">
-                    <input type="radio" name="extension" value="0" checked> JSON
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="extension" value="1"> CSV
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="extension" value="2"> Android Studio
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="extension" value="3"> Visual Studio (UWP)
-                </label>
+            <div class="col-md-2">
+                <input class="btn btn-warning" type="button" id="abandon" value="Porzuć">
+                <p>Importuj</p>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="0" checked> JSON
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="1"> Android Studio
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="2"> Visual Studio (UWP)
+                    </label>
+                </div>
                 <label>
-                    <input type="file" name="loader" accept=".txt,.json,.xml,.csv,.resw">
-                </label>
+                        <input type="file" name="loader" accept=".txt,.json,.xml,.resw">
+                    </label>
+
+                <p>Zapisz</p>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="0" checked> JSON
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="1"> Android Studio
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
+                    </label>
+                </div>
+                <input class="btn btn-primary" type="button" id="generate" value="Generuj">
+                <input class="btn btn-default" type="button" id="save" value="Zapisz">
+                <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+
+                <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-10">
                 <div style="height: 300px; background-color:royalblue">
                     <select name="languages" class="form-control">
                         <option value="">Dodaj język</option>
@@ -49,28 +73,8 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-8">
-                <label class="radio-inline">
-                    <input type="radio" name="saveAs" value="0" checked> JSON
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="saveAs" value="1"> CSV
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="saveAs" value="2"> Android Studio
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="saveAs" value="3"> Visual Studio (UWP)
-                </label>
-                <input class="btn btn-default" type="button" id="generate" value="Generuj">
-                <input class="btn btn-default" type="button" id="share" value="Udostępnij">
-            </div>
-            <div class="col-md-4">
-                SPA Projekt (2017) © Dziękujemy za wizytę!
-            </div>
-        </div>
     </div>
 
 </body>
+
 </html>
