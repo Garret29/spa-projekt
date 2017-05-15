@@ -5,25 +5,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <title>SPA Projekt</title>
 </head>
 
 <body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <input class="btn btn-warning" type="button" id="abandon" value="Porzuć">
+                <p>Importuj</p>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="0" checked> JSON
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="1"> Android Studio
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="extension" value="2"> Visual Studio (UWP)
+                    </label>
+                </div>
+                <label>
+                        <input type="file" name="loader" accept=".txt,.json,.xml,.resw">
+                    </label>
 
-    <input type="radio" name="extension" value="0" checked> JSON
-    <input type="radio" name="extension" value="1"> CSV
-    <input type="radio" name="extension" value="2"> Android Studio
-    <input type="radio" name="extension" value="3"> Visual Studio (UWP)
-    <input type="file" name="loader" accept=".txt,.json,.xml,.csv,.resw">
+                <p>Zapisz</p>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="0" checked> JSON
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="1"> Android Studio
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
+                    </label>
+                </div>
+                <input class="btn btn-primary" type="button" id="generate" value="Generuj">
+                <input class="btn btn-default" type="button" id="save" value="Zapisz">
+                <input class="btn btn-default" type="button" id="share" value="Udostępnij">
 
-    <div>
-        <table id="grid">
-            <tr>
-                <td>name</td>
-                <td>
-                    <select id="lang-select">
+                <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
+            </div>
+            <div class="col-md-10">
+                <table id="grid">
+                    <tr>
+                        <td>name</td>
+                        <td>
+                            <select id="lang-select">
                         <option value="">Dodaj język</option>
                         <option value="en">angielski</option>
                         <option value="fr">francuski</option>
@@ -37,21 +77,14 @@
                         <option value="uk">ukraiński</option>
                         <option value="it">włoski</option>
                     </select>
-                </td>
-            </tr>
-        </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <input type="radio" name="saveAs" value="0" checked> JSON
-    <input type="radio" name="saveAs" value="1"> CSV
-    <input type="radio" name="saveAs" value="2"> Android Studio
-    <input type="radio" name="saveAs" value="3"> Visual Studio (UWP)
-
-    <input class="btn btn-default" type="button" id="generate" value="Generuj">
-    <input class="btn btn-default" type="button" id="share" value="Udostępnij">
-
     <script>
-
         $.ajax({
             url: 'resources.json',
             success: function (response) {
@@ -67,7 +100,7 @@
                 this.createNamesColumn(grid, data);
                 for (var i = 0, k = data.langs.length; i < k; i++)
                     this.addColumn(table, data.langs[i].lang, data.langs[i].resources);
-                    
+
                 this.addRow(table);
             },
             createNamesColumn: function (table, data) {
@@ -134,7 +167,6 @@
                 gridManager.addColumn(table, this.value);
             }
         });
-
     </script>
 </body>
 
