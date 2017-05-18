@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <title>SPA Projekt</title>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <input class="btn btn-warning" type="button" id="abandon" value="Porzuć">
+            <p>Importuj</p>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="extension" value="0" checked> JSON
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="extension" value="1"> Android Studio
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="extension" value="2"> Visual Studio (UWP)
+                </label>
+            </div>
+            <label>
+                <input type="file" name="loader" accept=".txt,.json,.xml,.resw">
+            </label>
+
+            <p>Zapisz</p>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="saveAs" value="0" checked> JSON
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="saveAs" value="1"> Android Studio
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
+                </label>
+            </div>
+            <input class="btn btn-primary" type="button" id="generate" value="Generuj">
+            <input class="btn btn-default" type="button" id="save" value="Zapisz">
+            <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+
+            <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
+        </div>
+        <div class="col-md-10">
+            <table id="grid">
+                <tr>
+                    <td><label for="lang-select">name</label></td>
+                    <td>
+                        <select id="lang-select">
+                            <option value="">Dodaj język</option>
+                            <option value="en">angielski</option>
+                            <option value="fr">francuski</option>
+                            <option value="es">hiszpański</option>
+                            <option value="de">niemiecki</option>
+                            <option value="no">norweski</option>
+                            <option value="pl">polski</option>
+                            <option value="pt">portugalski</option>
+                            <option value="ru">rosyjski</option>
+                            <option value="sv">szwedzki</option>
+                            <option value="uk">ukraiński</option>
+                            <option value="it">włoski</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $.ajax({
+        url: 'resources.json',
+        success: function (response) {
+            gridManager.loadData(response);
+        }
+    });
+
+    var gridManager = {
+        loadData: function (data) {
+
+            var table = document.getElementById('grid');
+
+            this.createNamesColumn(grid, data);
+            for (var i = 0, k = data.langs.length; i < k; i++)
+                this.addColumn(table, data.langs[i].lang, data.langs[i].resources);
+
+            this.addRow(table);
+        },
+        createNamesColumn: function (table, data) {
+            if (data !== null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
+
+                for (var i = 0, k = data.langs[0].resources.length; i < k; i++) {
+
+                    var row = document.createElement('tr');
+                    var cell = document.createElement('td');
+                    var input = document.createElement('input');
+                    input.value = data.langs[0].resources[i].name;
+                    input.type = 'text';
+                    input.className = 'form-control';
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                    table.appendChild(row);
+                }
+            }
+        },
+        addColumn: function (table, lang, resources) {
+
+            for (var i = 0; i < table.rows.length; i++) {
+
+                var element;
+                if (i < 1) {
+                    element = document.createTextNode(lang);
+                    table.rows[i].insertCell(table.rows[i].cells.length - 1).appendChild(element);
+                } else {
+                    element = document.createElement('input');
+                    element.type = 'text';
+                    element.className = 'form-control';
+                    element.value = (typeof resources === 'undefined') ? "" : resources[i - 1].translation;
+                    table.rows[i].insertCell(table.rows[i].cells.length).appendChild(element);
+                }
+            }
+        },
+        addRow: function funkcja(table) {
+            var row = table.insertRow(table.rows.length);
+
+            for (var i = 0; i < table.rows[0].cells.length - 1; i++) {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control';
+                if (i === 0) {
+                    var clicked = false;
+                    input.addEventListener('input', function () {
+                        if (!clicked) {
+                            clicked = true;
+                            funkcja(table);
+                        }
+                    });
+                }
+                row.insertCell(i).appendChild(input);
+            }
+        }
+    };
+
+    // var table = document.getElementById('grid');
+    // gridManager.addRow(table);
+
+    document.getElementById('lang-select').addEventListener('change', function () {
+        if (this.value !== "") {
+            var table = document.getElementById('grid');
+            gridManager.addColumn(table, this.value);
+        }
+    });
+</script>
+</body>
+
+</html>
