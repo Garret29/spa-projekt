@@ -11,7 +11,8 @@
     <title>SPA Projekt</title>
 </head>
 
-<body>
+<body ng-app="translationApp" ng-controller="gridCtrl">
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2">
@@ -53,119 +54,120 @@
                     </label>
                 </div>
                 <input class="btn btn-primary" type="button" id="generate" value="Generuj">
-                <input class="btn btn-default" type="button" id="save" value="Zapisz">
+                <input class="btn btn-default" type="button" id="save" value="Zapisz" ng-click="show()">
                 <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+
+                <select id="lang-select" ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
 
                 <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
             </div>
             <div class="col-md-10">
-                <table id="grid">
+
+                <table>
                     <tr>
-                        <td>name</td>
-                        <td>
-                            <select id="lang-select">
-                        <option value="">Dodaj język</option>
-                        <option value="en">angielski</option>
-                        <option value="fr">francuski</option>
-                        <option value="es">hiszpański</option>
-                        <option value="de">niemiecki</option>
-                        <option value="no">norweski</option>
-                        <option value="pl">polski</option>
-                        <option value="pt">portugalski</option>
-                        <option value="ru">rosyjski</option>
-                        <option value="sv">szwedzki</option>
-                        <option value="uk">ukraiński</option>
-                        <option value="it">włoski</option>
-                    </select>
-                        </td>
+                        <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
+                    </tr>
+                    <tr ng-repeat="record in resources track by $index">
+                        <td ng-repeat="x in record"><input type="text" value="{{x}}" /></td>
+                        <td><button ng-click="resources.splice($index, 1)">X</button></td>
                     </tr>
                 </table>
+
+                <br />
+
+                <table>
+                    <tr>
+                        <td ng-repeat="x in getRange(count) track by $index"><input type="text" /></td>
+                    </tr>
+                </table>
+
+                <input class="btn btn-default" type="button" id="add" value="Dodaj" ng-click="addResource()">
             </div>
         </div>
     </div>
 
     <script>
-        $.ajax({
-            url: 'resources.json',
-            success: function (response) {
-                gridManager.loadData(response);
-            }
-        });
+        var app = angular.module('translationApp', []);
 
-        var gridManager = {
-            loadData: function (data) {
-
-                var table = document.getElementById('grid');
-
-                this.createNamesColumn(grid, data);
-                for (var i = 0, k = data.langs.length; i < k; i++)
-                    this.addColumn(table, data.langs[i].lang, data.langs[i].resources);
-
-                this.addRow(table);
-            },
-            createNamesColumn: function (table, data) {
-                if (data != null && data.langs.length > 0 && data.langs[0].resources.length > 0) {
-
-                    for (var i = 0, k = data.langs[0].resources.length; i < k; i++) {
-
-                        var row = document.createElement('tr');
-                        var cell = document.createElement('td');
-                        var input = document.createElement('input');
-                        input.value = data.langs[0].resources[i].name;
-                        input.type = 'text';
-                        input.className = 'form-control';
-                        cell.appendChild(input);
-                        row.appendChild(cell);
-                        table.appendChild(row);
-                    }
+        app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
+            $http.get('resources.json').then(function (response) {
+                $scope.resources = response.data.resources;
+                $scope.langs = $scope.resources[0];
+                $scope.count = Object.keys($scope.langs).length;
+                $scope.getRange = function (number) {
+                    return new Array(number);
                 }
-            },
-            addColumn: function (table, lang, resources) {
-
-                for (var i = 0; i < table.rows.length; i++) {
-
-                    var element;
-                    if (i < 1) {
-                        element = document.createTextNode(lang)
-                        table.rows[i].insertCell(table.rows[i].cells.length - 1).appendChild(element);
-                    } else {
-                        element = document.createElement('input');
-                        element.type = 'text';
-                        element.className = 'form-control';
-                        element.value = (typeof resources === 'undefined') ? "" : resources[i - 1].translation;
-                        table.rows[i].insertCell(table.rows[i].cells.length).appendChild(element);
-                    }
+                $scope.show = function () {
+                    console.log($scope.resources);
                 }
-            },
-            addRow: function funkcja(table) {
-                var row = table.insertRow(table.rows.length);
+                $scope.addResource = function () {
 
-                for (var i = 0; i < table.rows[0].cells.length - 1; i++) {
-                    var input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'form-control';
-                    if (i == 0) {
-                        var clicked = false;
-                        input.addEventListener('input', function () {
-                            if (!clicked) {
-                                clicked = true;
-                                funkcja(table);
-                            }
-                        });
-                    }
-                    row.insertCell(i).appendChild(input);
+                    // klonowanie obiektu
+                    var newObject = jQuery.extend(true, {}, $scope.resources[0]);
+
+                    $scope.resources.push(newObject);
                 }
-            }
-        }
+                $scope.addLang = function(lang) {
+                    for (var i = 0, k = $scope.resources.length; i < k; i++)
+                        if (!$scope.resources[i][lang])
+                            $scope.resources[i][lang] = "";
+                    $scope.count = Object.keys($scope.resources[0]).length;
+                }
+            });
+        }]);
 
-        // var table = document.getElementById('grid');
-        // gridManager.addRow(table);
-
-        document.getElementById('lang-select').addEventListener('change', function () {
-            if (this.value != "") {
-                var table = document.getElementById('grid');
-                gridManager.addColumn(table, this.value);
-            }
+        app.controller('selectCtrl', function ($scope) {
+            $scope.options = [
+                {
+                    "text": "Dodaj język",
+                    "value": ""
+                },
+                {
+                    "text": "angielski",
+                    "value": "en"
+                },
+                {
+                    "text": "francuski",
+                    "value": "fr"
+                },
+                {
+                    "text": "hiszpański",
+                    "value": "es"
+                },
+                {
+                    "text": "niemiecki",
+                    "value": "de"
+                },
+                {
+                    "text": "norweski",
+                    "value": "no"
+                },
+                {
+                    "text": "polski",
+                    "value": "pl"
+                },
+                {
+                    "text": "portugalski",
+                    "value": "pt"
+                },
+                {
+                    "text": "rosyjski",
+                    "value": "ru"
+                },
+                {
+                    "text": "szwedzki",
+                    "value": "sv"
+                },
+                {
+                    "text": "ukraiński",
+                    "value": "uk"
+                },
+                {
+                    "text": "włoski",
+                    "value": "it"
+                }
+            ];
+            $scope.selectedItem = $scope.options[0];
         });
     </script>
 </body>
