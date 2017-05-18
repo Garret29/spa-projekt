@@ -54,34 +54,31 @@
                     </label>
                 </div>
                 <input class="btn btn-primary" type="button" id="generate" value="Generuj">
-                <input class="btn btn-default" type="button" id="save" value="Zapisz" ng-click="show()">
                 <input class="btn btn-default" type="button" id="share" value="Udostępnij">
-
-                <select id="lang-select" ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
 
                 <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
             </div>
-            <div class="col-md-10">
 
-                <table>
+            <div class="col-md-10" style="padding-left: 0; padding-right: 0;">
+
+                <table class="table" style="display: block; overflow-x: auto;">
                     <tr>
                         <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
+                        <th>
+                            <select id="lang-select" ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
+                        </th>
                     </tr>
                     <tr ng-repeat="record in resources track by $index">
                         <td ng-repeat="x in record"><input type="text" value="{{x}}" /></td>
                         <td><button ng-click="resources.splice($index, 1)">X</button></td>
                     </tr>
-                </table>
-
-                <br />
-
-                <table>
                     <tr>
-                        <td ng-repeat="x in getRange(count) track by $index"><input type="text" /></td>
+                        <td><input class="btn btn-default" type="button" style="width: 100%" id="add" value="Dodaj" ng-click="addResource()"></td>
                     </tr>
                 </table>
 
-                <input class="btn btn-default" type="button" id="add" value="Dodaj" ng-click="addResource()">
+
+                <input class="btn btn-default" type="button" id="save" value="Zapisz" ng-click="show()">
             </div>
         </div>
     </div>
@@ -89,29 +86,35 @@
     <script>
         var app = angular.module('translationApp', []);
 
+        // app.controller('gridCtrl', ['$scope', function ($scope) {
         app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
             $http.get('resources.json').then(function (response) {
+
+                // $scope.resources = [{name: "tmp"}];
                 $scope.resources = response.data.resources;
-                $scope.langs = $scope.resources[0];
-                $scope.count = Object.keys($scope.langs).length;
-                $scope.getRange = function (number) {
-                    return new Array(number);
-                }
+
                 $scope.show = function () {
                     console.log($scope.resources);
                 }
+
                 $scope.addResource = function () {
 
-                    // klonowanie obiektu
-                    var newObject = jQuery.extend(true, {}, $scope.resources[0]);
-
-                    $scope.resources.push(newObject);
+                    var source = $scope.resources[0];
+                    var emptyObject = {}
+                    for (var key in source) {
+                        if (source.hasOwnProperty(key)) {
+                            emptyObject[key] = '';
+                        }
+                    }
+                    $scope.resources.push(emptyObject);
                 }
-                $scope.addLang = function(lang) {
-                    for (var i = 0, k = $scope.resources.length; i < k; i++)
-                        if (!$scope.resources[i][lang])
-                            $scope.resources[i][lang] = "";
-                    $scope.count = Object.keys($scope.resources[0]).length;
+
+                $scope.addLang = function (lang) {
+                    if (lang != '') {
+                        for (var i = 0, k = $scope.resources.length; i < k; i++)
+                            if (!$scope.resources[i][lang])
+                                $scope.resources[i][lang] = '';
+                    }
                 }
             });
         }]);
