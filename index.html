@@ -69,8 +69,12 @@
                         </th>
                     </tr>
                     <tr ng-repeat="record in resources track by $index">
-                        <td ng-repeat="x in record"><input type="text" value="{{x}}" /></td>
-                        <td><button ng-click="resources.splice($index, 1)">X</button></td>
+                        <td ng-repeat="(key, value) in record">
+                            <input type="text" ng-model="resources[$parent.$index][key]" />
+                        </td>
+                        <td>
+                            <button ng-click="resources.splice($index, 1)">Usuń</button>
+                        </td>
                     </tr>
                     <tr>
                         <td><input class="btn btn-default" type="button" style="width: 100%" id="add" value="Dodaj" ng-click="addResource()"></td>
