@@ -86,7 +86,8 @@
 
 <script>
     $.ajax({
-        url: 'res/resources.json',
+        url: '/translations/garret29',
+        dataType: "application/json; utf-8",
         success: function (response) {
             gridManager.loadData(response);
         }
