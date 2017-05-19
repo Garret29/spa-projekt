@@ -24,6 +24,8 @@
                         <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
                     </label>
                 </div>
+                <tt>selectedButton = {{selectedButton}}</tt><br />
+                <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
 
                 <label>
                     <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
@@ -119,20 +121,69 @@
 
             $scope.loadData = function (input) {
                 var file = input.files[0];
-                console.log(file);
+
                 if (file) {
+
                     var reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
-                    console.log(reader);
+
+                    // console.log(file);
+                    // console.log(reader);
+
                     reader.onload = function (evt) {
-                        var result = JSON.parse(evt.target.result);
+
+                        if (file.name.includes(".json")) {
+
+                            var result = JSON.parse(evt.target.result).resources;
+
+                        } else if (file.name.includes(".xml")) {
+
+                            var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
+
+                            // console.log(xmlDoc);
+
+                            var records = [];
+                            var resources = xmlDoc.firstChild;
+                            for (var i = 0, k = resources.children.length; i < k; i++) {
+                                records.push({
+                                    name: resources.children[i].attributes['name'].textContent,
+                                    value: resources.children[i].textContent
+                                });
+                            };
+
+                            var result = records;
+
+                        } else if (file.name.includes(".resw")) {
+
+                            var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
+
+                            // console.log(xmlDoc);
+
+                            var records = [];
+                            var resources = xmlDoc.querySelectorAll('data');
+                            for (var i = 0, k = resources.length; i < k; i++) {
+                                records.push({
+                                    name: resources[i].attributes['name'].textContent,
+                                    value: resources[i].children[0].textContent
+                                    // comment: resources[i].children[1].textContent
+                                });
+                            };
+
+                            var result = records;
+
+                        } else
+                            return false;
+
+
                         $scope.$apply(function () {
-                            $scope.resources = result.resources;
+                            $scope.resources = result;
                         });
                         input.value = '';
                     };
                     reader.onerror = function (evt) {
-                        $scope.resources = [{ name: 'Błąd odczytu pliku' }];
+                        $scope.$apply(function () {
+                            $scope.resources = [{ name: '' }];
+                        });
                         input.value = '';
                     }
                 }
