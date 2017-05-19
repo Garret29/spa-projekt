@@ -11,7 +11,8 @@
     <title>SPA Projekt</title>
 </head>
 
-<body>
+<body ng-app="translationApp" ng-controller="gridCtrl">
+
     <div class="container-fluid">
         <div class="row">
 
@@ -23,25 +24,19 @@
                 <input class="btn btn-success" type="button" value="Wczytaj">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-3" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
                 <p class="text-center">Importuj</p>
-                <div class="radio">
+                
+                <div class="radio" ng-repeat="item in radioButtons">
                     <label>
-                        <input type="radio" name="extension" value="0" checked> JSON
+                        <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
                     </label>
                 </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="extension" value="1"> Android Studio
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="extension" value="2"> Visual Studio (UWP)
-                    </label>
-                </div>
+                <tt>selectedButton = {{selectedButton}}</tt><br />
+                <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
+                
                 <label>
-                    <input type="file" name="loader" accept=".txt,.json,.xml,.resw">
+                    <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
                 </label>
             </div>
 
@@ -63,22 +58,219 @@
                         <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
                     </label>
                 </div>
-                <input class="btn btn-primary" type="button" id="generate" value="Generuj">
+                <input class="btn btn-primary" type="button" value="Generuj">
             </div>
 
             <div class="col-md-3">
                 <p class="text-center">Opcje</p>
 
-                <input class="btn btn-warning" type="button" value="Utwórz">
-                <input class="btn btn-default" type="button" id="save" value="Zapisz">
-                <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+                <input class="btn btn-warning" type="button" value="Utwórz" ng-click="clearGrid()">
+                <input class="btn btn-default" type="button" value="Zapisz" ng-click="show()">
+                <input class="btn btn-default" type="button" value="Udostępnij">
             </div>
         </div>
+        
         <div class="row">
-            <div class="col-md-12" style="background-color: orange; height: 200px"></div>
+            <div class="col-md-12" style="background-color: #ddd">
+                <table class="table" style="display: block; overflow-x: auto;">
+                    <tr>
+                        <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
+                        <th>
+                            <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
+                        </th>
+                    </tr>
+                    <tr ng-repeat="record in resources track by $index">
+                        <td ng-repeat="(key, value) in record">
+                            <input type="text" ng-model="resources[$parent.$index][key]" />
+                        </td>
+                        <td>
+                            <button ng-click="resources.splice($index, 1)">Usuń</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
+                    </tr>
+                </table>
+            </div>
             <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
         </div>
     </div>
+
+    <script>
+        var app = angular.module('translationApp', []);
+
+        app.controller('gridCtrl', ['$scope', function ($scope) {
+            // app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
+            //     $http.get('resources.json').then(function (response) {
+
+            $scope.resources = [{ name: '' }];
+            // $scope.resources = response.data.resources;
+
+            $scope.clearGrid = function () {
+                $scope.resources = [{ name: '' }];
+            }
+
+            $scope.show = function () {
+                console.log($scope.resources);
+            }
+
+            $scope.addResource = function () {
+
+                var source = $scope.resources[0];
+                var emptyObject = {}
+                for (var key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        emptyObject[key] = '';
+                    }
+                }
+                $scope.resources.push(emptyObject);
+            }
+
+            $scope.addLang = function (lang) {
+                if (lang != '') {
+                    for (var i = 0, k = $scope.resources.length; i < k; i++)
+                        if (!$scope.resources[i][lang])
+                            $scope.resources[i][lang] = '';
+                }
+            }
+
+            $scope.loadData = function (input) {
+                var file = input.files[0];
+
+                if (file) {
+
+                    var reader = new FileReader();
+                    reader.readAsText(file, "UTF-8");
+
+                    // console.log(file);
+                    // console.log(reader);
+
+                    reader.onload = function (evt) {
+
+                        if (file.name.includes(".json")) {
+
+                            var result = JSON.parse(evt.target.result).resources;
+
+                        } else if (file.name.includes(".xml")) {
+
+                            var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
+
+                            // console.log(xmlDoc);
+
+                            var records = [];
+                            var resources = xmlDoc.firstChild;
+                            for (var i = 0, k = resources.children.length; i < k; i++) {
+                                records.push({
+                                    name: resources.children[i].attributes['name'].textContent,
+                                    value: resources.children[i].textContent
+                                });
+                            };
+
+                            var result = records;
+
+                        } else if (file.name.includes(".resw")) {
+
+                            var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
+
+                            // console.log(xmlDoc);
+
+                            var records = [];
+                            var resources = xmlDoc.querySelectorAll('data');
+                            for (var i = 0, k = resources.length; i < k; i++) {
+                                records.push({
+                                    name: resources[i].attributes['name'].textContent,
+                                    value: resources[i].children[0].textContent
+                                    // comment: resources[i].children[1].textContent
+                                });
+                            };
+
+                            var result = records;
+
+                        } else
+                            return false;
+
+
+                        $scope.$apply(function () {
+                            $scope.resources = result;
+                        });
+                        input.value = '';
+                    };
+                    reader.onerror = function (evt) {
+                        $scope.$apply(function () {
+                            $scope.resources = [{ name: '' }];
+                        });
+                        input.value = '';
+                    }
+                }
+            }
+            // });
+        }]);
+
+        app.controller('extensionRadioCtrl', function ($scope) {
+            $scope.radioButtons = [
+                { text: "JSON", value: '0', extension: ".json" },
+                { text: "Android Studio", value: '1', extension: ".xml" },
+                { text: "Visual Studio (UWP)", value: '2', extension: ".resw" }
+            ];
+            $scope.changeSelection = function (index) {
+                $scope.selectedButton = index;
+            };
+        });
+
+        app.controller('selectCtrl', function ($scope) {
+            $scope.options = [
+                {
+                    "text": "Dodaj język",
+                    "value": ""
+                },
+                {
+                    "text": "angielski",
+                    "value": "en"
+                },
+                {
+                    "text": "francuski",
+                    "value": "fr"
+                },
+                {
+                    "text": "hiszpański",
+                    "value": "es"
+                },
+                {
+                    "text": "niemiecki",
+                    "value": "de"
+                },
+                {
+                    "text": "norweski",
+                    "value": "no"
+                },
+                {
+                    "text": "polski",
+                    "value": "pl"
+                },
+                {
+                    "text": "portugalski",
+                    "value": "pt"
+                },
+                {
+                    "text": "rosyjski",
+                    "value": "ru"
+                },
+                {
+                    "text": "szwedzki",
+                    "value": "sv"
+                },
+                {
+                    "text": "ukraiński",
+                    "value": "uk"
+                },
+                {
+                    "text": "włoski",
+                    "value": "it"
+                }
+            ];
+            $scope.selectedItem = $scope.options[0];
+        });
+    </script>
 </body>
 
 </html>
