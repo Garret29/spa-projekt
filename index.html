@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="converter.js"></script>
     <title>SPA Projekt</title>
 </head>
 
@@ -17,62 +18,80 @@
         <div class="row">
 
             <div class="col-md-3">
-                <p class="text-center">Wczytaj</p>
-                
-                <input type="text" placeholder="ID"/>
-                <input type="text" placeholder="Hasło"/>
-                <input class="btn btn-success" type="button" value="Wczytaj">
+                <div style="margin: 0 20px">
+                    <h3 class="text-center">Wczytaj</h3>
+
+                    <form>
+                        <div class="form-group">
+                            <label for="inputFormID">ID</label>
+                            <input type="email" class="form-control" id="inputFormID" placeholder="ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputFormPassword">Password</label>
+                            <input type="password" class="form-control" id="inputFormPassword" placeholder="Hasło" aria-describedby="helpBlock">
+                            <span id="helpBlock" class="help-block">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
+                        </div>
+                        <input type="button" class="btn btn-success" value="Wczytaj">
+                    </form>
+                </div>
             </div>
 
             <div class="col-md-3" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
-                <p class="text-center">Importuj</p>
-                
-                <div class="radio" ng-repeat="item in radioButtons">
+                <div style="margin: 0 40px">
+                    <h3 class="text-center">Importuj</h3>
+
+                    <div class="radio" ng-repeat="item in radioButtons">
+                        <label>
+                            <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
+                        </label>
+                    </div>
+                    <tt>selectedButton = {{selectedButton}}</tt><br />
+                    <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
+
                     <label>
-                        <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
+                        <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
                     </label>
                 </div>
-                <tt>selectedButton = {{selectedButton}}</tt><br />
-                <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
-                
-                <label>
-                    <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
-                </label>
             </div>
 
             <div class="col-md-3">
-                <p class="text-center">Zapisz</p>
-
-                <div class="radio">
-                    <label>
+                <div style="margin: 0 40px">
+                    <h3 class="text-center">Zapisz</h3>
+                    <!--
+                    <div class="radio">
+                        <label>
                         <input type="radio" name="saveAs" value="0" checked> JSON
                     </label>
-                </div>
-                <div class="radio">
-                    <label>
+                    </div>
+                    <div class="radio">
+                        <label>
                         <input type="radio" name="saveAs" value="1"> Android Studio
                     </label>
-                </div>
-                <div class="radio">
-                    <label>
+                    </div>
+                    <div class="radio">
+                        <label>
                         <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
                     </label>
+                    </div>
+                    <input class="btn btn-primary" type="button" value="Generuj">
+                    -->
                 </div>
-                <input class="btn btn-primary" type="button" value="Generuj">
             </div>
 
             <div class="col-md-3">
-                <p class="text-center">Opcje</p>
+                <div style="margin: 0 40px">
+                    <h3 class="text-center">Opcje</h3>
 
-                <input class="btn btn-warning" type="button" value="Utwórz" ng-click="clearGrid()">
-                <input class="btn btn-default" type="button" value="Zapisz" ng-click="show()">
-                <input class="btn btn-default" type="button" value="Udostępnij">
+                    <input class="btn btn-warning" type="button" value="Nowa" ng-click="clearGrid()">
+                    <input class="btn btn-default" type="button" value="Zapisz (JSON)" ng-click="save()">
+                    <!--<input class="btn btn-default" type="button" value="Udostępnij">-->
+                </div>
             </div>
         </div>
-        
+
         <div class="row">
-            <div class="col-md-12" style="background-color: #ddd">
-                <table class="table" style="display: block; overflow-x: auto;">
+            <div class="col-md-12" style="background-color: #eef; padding: 0; margin: 30px 0;">
+                <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
                     <tr>
                         <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
                         <th>
@@ -100,18 +119,19 @@
         var app = angular.module('translationApp', []);
 
         app.controller('gridCtrl', ['$scope', function ($scope) {
-            // app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
-            //     $http.get('resources.json').then(function (response) {
-
             $scope.resources = [{ name: '' }];
-            // $scope.resources = response.data.resources;
 
             $scope.clearGrid = function () {
                 $scope.resources = [{ name: '' }];
             }
 
-            $scope.show = function () {
-                console.log($scope.resources);
+            $scope.save = function () {
+
+                var json = { resources: $scope.resources };
+                var serializedJSON = JSON.stringify(json);
+                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                var filename = "resources";
+                download(filename + ".json", serializedJSON);
             }
 
             $scope.addResource = function () {
@@ -138,57 +158,24 @@
                 var file = input.files[0];
 
                 if (file) {
-
                     var reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
 
-                    // console.log(file);
-                    // console.log(reader);
-
                     reader.onload = function (evt) {
+                        var result = [{ name: '' }];
 
                         if (file.name.includes(".json")) {
-
-                            var result = JSON.parse(evt.target.result).resources;
+                            result = JSON.parse(evt.target.result).resources;
 
                         } else if (file.name.includes(".xml")) {
-
                             var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
-
-                            // console.log(xmlDoc);
-
-                            var records = [];
-                            var resources = xmlDoc.firstChild;
-                            for (var i = 0, k = resources.children.length; i < k; i++) {
-                                records.push({
-                                    name: resources.children[i].attributes['name'].textContent,
-                                    value: resources.children[i].textContent
-                                });
-                            };
-
-                            var result = records;
+                            result = converter.fromAndroidStudioFormat(xmlDoc);
 
                         } else if (file.name.includes(".resw")) {
-
                             var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
+                            result = converter.fromVisualStudioFormat(xmlDoc);
 
-                            // console.log(xmlDoc);
-
-                            var records = [];
-                            var resources = xmlDoc.querySelectorAll('data');
-                            for (var i = 0, k = resources.length; i < k; i++) {
-                                records.push({
-                                    name: resources[i].attributes['name'].textContent,
-                                    value: resources[i].children[0].textContent
-                                    // comment: resources[i].children[1].textContent
-                                });
-                            };
-
-                            var result = records;
-
-                        } else
-                            return false;
-
+                        }
 
                         $scope.$apply(function () {
                             $scope.resources = result;
@@ -203,7 +190,6 @@
                     }
                 }
             }
-            // });
         }]);
 
         app.controller('extensionRadioCtrl', function ($scope) {
@@ -270,6 +256,19 @@
             ];
             $scope.selectedItem = $scope.options[0];
         });
+
+        function download(filename, text) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
     </script>
 </body>
 
