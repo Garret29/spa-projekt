@@ -15,27 +15,19 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2">
-                <input class="btn btn-warning" type="button" id="abandon" value="Porzuć">
+            <div class="col-md-2" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
+                <input class="btn btn-warning" type="button" value="Porzuć" ng-click="clearGrid()">
                 <p>Importuj</p>
-                <div class="radio">
+
+                <div class="radio" ng-repeat="item in radioButtons">
                     <label>
-                        <input type="radio" name="extension" value="0" checked> JSON
+                        <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
                     </label>
                 </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="extension" value="1"> Android Studio
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="extension" value="2"> Visual Studio (UWP)
-                    </label>
-                </div>
+
                 <label>
-                        <input type="file" name="loader" accept=".txt,.json,.xml,.resw">
-                    </label>
+                    <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
+                </label>
 
                 <p>Zapisz</p>
                 <div class="radio">
@@ -53,19 +45,22 @@
                         <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
                     </label>
                 </div>
-                <input class="btn btn-primary" type="button" id="generate" value="Generuj">
-                <input class="btn btn-default" type="button" id="share" value="Udostępnij">
+
+                <input class="btn btn-primary" type="button" value="Generuj">
+
+                <input class="btn btn-default" type="button" value="Udostępnij">
+
+                <input class="btn btn-default" type="button" value="Zapisz" ng-click="show()">
 
                 <p>SPA Projekt (2017) © Dziękujemy za wizytę!</p>
             </div>
 
             <div class="col-md-10" style="padding-left: 0; padding-right: 0;">
-
                 <table class="table" style="display: block; overflow-x: auto;">
                     <tr>
                         <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
                         <th>
-                            <select id="lang-select" ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
+                            <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
                         </th>
                     </tr>
                     <tr ng-repeat="record in resources track by $index">
@@ -77,12 +72,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><input class="btn btn-default" type="button" style="width: 100%" id="add" value="Dodaj" ng-click="addResource()"></td>
+                        <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
                     </tr>
                 </table>
-
-
-                <input class="btn btn-default" type="button" id="save" value="Zapisz" ng-click="show()">
             </div>
         </div>
     </div>
@@ -90,38 +82,74 @@
     <script>
         var app = angular.module('translationApp', []);
 
-        // app.controller('gridCtrl', ['$scope', function ($scope) {
-        app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
-            $http.get('resources.json').then(function (response) {
+        app.controller('gridCtrl', ['$scope', function ($scope) {
+            // app.controller('gridCtrl', ['$scope', '$http', function ($scope, $http) {
+            //     $http.get('resources.json').then(function (response) {
 
-                // $scope.resources = [{name: "tmp"}];
-                $scope.resources = response.data.resources;
+            $scope.resources = [{ name: '' }];
+            // $scope.resources = response.data.resources;
 
-                $scope.show = function () {
-                    console.log($scope.resources);
-                }
+            $scope.clearGrid = function () {
+                $scope.resources = [{ name: '' }];
+            }
 
-                $scope.addResource = function () {
+            $scope.show = function () {
+                console.log($scope.resources);
+            }
 
-                    var source = $scope.resources[0];
-                    var emptyObject = {}
-                    for (var key in source) {
-                        if (source.hasOwnProperty(key)) {
-                            emptyObject[key] = '';
-                        }
-                    }
-                    $scope.resources.push(emptyObject);
-                }
+            $scope.addResource = function () {
 
-                $scope.addLang = function (lang) {
-                    if (lang != '') {
-                        for (var i = 0, k = $scope.resources.length; i < k; i++)
-                            if (!$scope.resources[i][lang])
-                                $scope.resources[i][lang] = '';
+                var source = $scope.resources[0];
+                var emptyObject = {}
+                for (var key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        emptyObject[key] = '';
                     }
                 }
-            });
+                $scope.resources.push(emptyObject);
+            }
+
+            $scope.addLang = function (lang) {
+                if (lang != '') {
+                    for (var i = 0, k = $scope.resources.length; i < k; i++)
+                        if (!$scope.resources[i][lang])
+                            $scope.resources[i][lang] = '';
+                }
+            }
+
+            $scope.loadData = function (input) {
+                var file = input.files[0];
+                console.log(file);
+                if (file) {
+                    var reader = new FileReader();
+                    reader.readAsText(file, "UTF-8");
+                    console.log(reader);
+                    reader.onload = function (evt) {
+                        var result = JSON.parse(evt.target.result);
+                        $scope.$apply(function () {
+                            $scope.resources = result.resources;
+                        });
+                        input.value = '';
+                    };
+                    reader.onerror = function (evt) {
+                        $scope.resources = [{ name: 'Błąd odczytu pliku' }];
+                        input.value = '';
+                    }
+                }
+            }
+            // });
         }]);
+
+        app.controller('extensionRadioCtrl', function ($scope) {
+            $scope.radioButtons = [
+                { text: "JSON", value: '0', extension: ".json" },
+                { text: "Android Studio", value: '1', extension: ".xml" },
+                { text: "Visual Studio (UWP)", value: '2', extension: ".resw" }
+            ];
+            $scope.changeSelection = function (index) {
+                $scope.selectedButton = index;
+            };
+        });
 
         app.controller('selectCtrl', function ($scope) {
             $scope.options = [
