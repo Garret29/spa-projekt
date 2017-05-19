@@ -19,7 +19,11 @@ public class TranslationController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/translations/{username}", produces = {"application/json; charset=UTF-8"})
-    public String getTranslations(@PathVariable String username) {
+    public String getTranslations(@PathVariable String username, @RequestParam(name = "pass") String password) throws Exception {
+        if (!translationsRepository.findByUsername(username).getPassword().equals(password))
+        {
+            throw new Exception("Wrong password!");
+        }
         return translationsRepository.findByUsername(username).getTranslationsSerializedJSON();
     }
 

@@ -11,6 +11,9 @@ public class TranslationData {
     @Id
     private String username;
 
+    @Column
+    private String password;
+
     @Lob
     @Column
     private String translationsSerializedJSON;
@@ -41,5 +44,13 @@ public class TranslationData {
 
     public String getTranslationsSerializedJSON() {
         return translationsSerializedJSON;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
