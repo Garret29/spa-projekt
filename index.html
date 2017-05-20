@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="converter.js"></script>
     <title>SPA Projekt</title>
@@ -14,105 +15,118 @@
 
 <body ng-app="translationApp" ng-controller="gridCtrl">
 
-    <div class="container-fluid">
-        <div class="row">
+    <div class="row">
 
-            <div class="col-md-3">
-                <div style="margin: 0 20px">
-                    <h3 class="text-center">Wczytaj</h3>
+        <div class="col-md-3">
+            <div style="margin: 0 20px">
+                <h3 class="text-center">Wczytaj</h3>
 
-                    <form>
-                        <div class="form-group">
-                            <label for="inputFormID">ID</label>
-                            <input type="email" class="form-control" id="inputFormID" placeholder="ID">
-                        </div>
-                        <div class="form-group">
-                            <label for="inputFormPassword">Password</label>
-                            <input type="password" class="form-control" id="inputFormPassword" placeholder="Hasło" aria-describedby="helpBlock">
-                            <span id="helpBlock" class="help-block">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
-                        </div>
-                        <input type="button" class="btn btn-success" value="Wczytaj">
-                    </form>
-                </div>
+                <form>
+                    <div class="form-group">
+                        <label for="inputFormID">ID</label>
+                        <input type="number" class="form-control" id="inputFormID" placeholder="ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputFormPassword">Password</label>
+                        <input type="password" class="form-control" id="inputFormPassword" placeholder="Hasło">
+                        <span class="help-block">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
+                    </div>
+                    <input type="button" class="btn btn-success" value="Wczytaj">
+                </form>
             </div>
+        </div>
 
-            <div class="col-md-3" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
-                <div style="margin: 0 40px">
-                    <h3 class="text-center">Importuj</h3>
+        <div class="col-md-3" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
+            <div style="margin: 0 40px">
+                <h3 class="text-center">Importuj</h3>
 
-                    <div class="radio" ng-repeat="item in radioButtons">
-                        <label>
+                <div class="radio" ng-repeat="item in radioButtons">
+                    <label>
                             <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
                         </label>
-                    </div>
-                    <tt>selectedButton = {{selectedButton}}</tt><br />
-                    <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
-
-                    <label>
-                        <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
-                    </label>
                 </div>
+                <tt>selectedButton = {{selectedButton}}</tt><br />
+                <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
+
+                <label>
+                    <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
+                </label>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <div style="margin: 0 40px">
-                    <h3 class="text-center">Zapisz</h3>
-                    <!--
-                    <div class="radio">
-                        <label>
-                        <input type="radio" name="saveAs" value="0" checked> JSON
-                    </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                        <input type="radio" name="saveAs" value="1"> Android Studio
-                    </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                        <input type="radio" name="saveAs" value="2"> Visual Studio (UWP)
-                    </label>
-                    </div>
-                    <input class="btn btn-primary" type="button" value="Generuj">
-                    -->
-                </div>
-            </div>
+        <div class="col-md-3">
+            <div style="margin: 0 40px">
+                <h3 class="text-center">Zapisz</h3>
 
-            <div class="col-md-3">
-                <div style="margin: 0 40px">
-                    <h3 class="text-center">Opcje</h3>
+                <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
+                <input class="btn btn-default btn-block" type="button" value="Generuj (Android Studio)" data-toggle="modal" data-target="#myModal">
+                <input class="btn btn-default btn-block" type="button" value="Generuj (Visual Studio)" data-toggle="modal" data-target="#myModal">
 
-                    <input class="btn btn-warning" type="button" value="Nowa" ng-click="clearGrid()">
-                    <input class="btn btn-default" type="button" value="Zapisz (JSON)" ng-click="save()">
-                    <!--<input class="btn btn-default" type="button" value="Udostępnij">-->
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="select1">Nazwa kolumny:</label>
+                                    <select class="form-control" id="select1">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                                <button type="button" class="btn btn-primary">Generuj</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12" style="background-color: #eef; padding: 0; margin: 30px 0;">
-                <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
-                    <tr>
-                        <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
-                        <th>
-                            <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
-                        </th>
-                    </tr>
-                    <tr ng-repeat="record in resources track by $index">
-                        <td ng-repeat="(key, value) in record">
-                            <input type="text" ng-model="resources[$parent.$index][key]" />
-                        </td>
-                        <td>
-                            <button ng-click="resources.splice($index, 1)">Usuń</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
-                    </tr>
-                </table>
+        <div class="col-md-3">
+            <div style="margin: 0 40px">
+                <h3 class="text-center">Opcje</h3>
+
+                <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
+                <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
+                <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
+                <input class="btn btn-info btn-block" type="button" value="Udostępnij">
             </div>
-            <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" style="background-color: #eef; margin: 30px 0;">
+            <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
+                <tr>
+                    <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
+                    <th>
+                        <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
+                    </th>
+                </tr>
+                <tr ng-repeat="record in resources track by $index">
+                    <td ng-repeat="(key, value) in record">
+                        <input type="text" ng-model="resources[$parent.$index][key]" ng-dblclick="showTranslations(this)" />
+                    </td>
+                    <td>
+                        <button ng-click="resources.splice($index, 1)">Usuń</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
+                </tr>
+            </table>
+        </div>
+        <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
+    </div>
     </div>
 
     <script>
@@ -125,7 +139,7 @@
                 $scope.resources = [{ name: '' }];
             }
 
-            $scope.save = function () {
+            $scope.saveAsJSON = function () {
 
                 var json = { resources: $scope.resources };
                 var serializedJSON = JSON.stringify(json);
@@ -164,14 +178,14 @@
                     reader.onload = function (evt) {
                         var result = [{ name: '' }];
 
-                        if (file.name.includes(".json")) {
+                        if (file.name.endsWith(".json")) {
                             result = JSON.parse(evt.target.result).resources;
 
-                        } else if (file.name.includes(".xml")) {
+                        } else if (file.name.endsWith(".xml")) {
                             var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
                             result = converter.fromAndroidStudioFormat(xmlDoc);
 
-                        } else if (file.name.includes(".resw")) {
+                        } else if (file.name.endsWith(".resw")) {
                             var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
                             result = converter.fromVisualStudioFormat(xmlDoc);
 
@@ -189,7 +203,22 @@
                         input.value = '';
                     }
                 }
+            };
+
+            $scope.saveToLocalStorage = function () {
+                var serializedJSON = JSON.stringify($scope.resources);
+                localStorage.setItem("translations", serializedJSON)
+            };
+
+            $scope.loadFromLocalStorage = function () {
+                var serializedJSON = localStorage.getItem("translations");
+                if (serializedJSON != null)
+                    $scope.resources = JSON.parse(serializedJSON);
             }
+
+            $scope.showTranslations = function (handle) {
+
+            };
         }]);
 
         app.controller('extensionRadioCtrl', function ($scope) {
@@ -259,7 +288,7 @@
 
         function download(filename, text) {
             var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
             element.setAttribute('download', filename);
 
             element.style.display = 'none';

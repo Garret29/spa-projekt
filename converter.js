@@ -6,7 +6,7 @@ var converter = {
         for (var i = 0; i < resources.length; i++) {
             var json = resources[i];
             var node = doc.createElement('string');
-            $(node).text(record.translation);
+            $(node).text(record.base);
             var attr = document.createAttribute('name');
             attr.value = record.name;
             node.setAttributeNode(attr);
@@ -25,7 +25,7 @@ var converter = {
             attr.value = record.name;
             node.setAttributeNode(attr);
             var childNode = document.createElement('value');
-            $(childNode).text(record.translation);
+            $(childNode).text(record.base);
             node.appendChild(childNode);
             xml.appendChild(node);
         };
@@ -37,7 +37,7 @@ var converter = {
         for (var i = 0, k = strings.length; i < k; i++) {
             obj.push({
                 name: strings[i].attributes[0].textContent,
-                translation: strings[i].textContent
+                base: strings[i].textContent
             })
         };
         return obj; // array of objects
@@ -48,7 +48,7 @@ var converter = {
         for (var i = 0, k = strings.length; i < k; i++) {
             obj.push({
                 name: strings[i].attributes[0].textContent,
-                translation: strings[i].children[0].textContent
+                base: strings[i].children[0].textContent
             })
         };
         return obj; // array of objects
