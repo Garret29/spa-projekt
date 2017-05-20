@@ -24,101 +24,119 @@
     </nav>
 
     <div class="row">
+        <div class="col-md-2">
+            <div style="margin: 0 20px;">
 
-        <div class="col-md-3">
-            <div style="margin: 0 20px">
-                <h3 class="text-center">Wczytaj</h3>
+            <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
+            <label class="btn btn-default btn-block btn-file">
+                Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
+            </label>
+            <input type="button" class="btn btn-default btn-block" value="Importuj z bazy.." data-toggle="modal" data-target="#modal-load">
+            <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
 
-                <input type="button" class="btn btn-default btn-block" value="Wczytaj.." data-toggle="modal" data-target="#modal-load">
+            <br />
 
-                <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
-                    <div class="modal-dialog modal-sm" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
-                            </div>
-                            <div class="modal-body">
-                               <form>
-                                    <div class="form-group">
-                                        <label for="inputID">ID:</label>
-                                        <input type="number" class="form-control" id="inputID" placeholder="ID">
-                                    </div>
-                                    <div class="form-group">
-                                         <label for="inputPassword">Hasło:</label>
-                                        <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                        <span class="help-block">Informacja z bazy danych..</span>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                                <button type="button" class="btn btn-success">Wczytaj</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div style="margin: 0 40px">
-                <h3 class="text-center">Importuj</h3>
-
-                <label class="btn btn-danger btn-block btn-file">
-                    Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
+            <div class="checkbox text-center">
+                <label>
+                    <input type="checkbox"> Podpowiedzi z translatora
                 </label>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div style="margin: 0 40px">
-                <h3 class="text-center">Zapisz</h3>
+            <br />
 
-                <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
-                <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-save">
+            <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
+            <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-generate">
+            <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
+            <input class="btn btn-info btn-block" type="button" value="Udostępnij.." ng-click="share()" data-toggle="modal" data-target="#modal-share">
 
-                <!-- Modal -->
-                <div class="modal fade" id="modal-save" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
-                            </div>
-                            <div class="modal-body">
+            <br />
+
+            <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
                                 <div class="form-group">
-                                    <label for="select1">Nazwa kolumny:</label>
-                                    <select class="form-control" id="select1">
-                                        <option ng-repeat="(key, value) in resources[0]">{{key}}</option>
-                                    </select>
+                                    <label for="inputID">ID:</label>
+                                    <input type="number" class="form-control" id="inputID" placeholder="ID">
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                                <button type="button" class="btn btn-primary">Generuj (Android Studio)</button>
-                                <button type="button" class="btn btn-primary">Generuj (Visual Studio)</button>
-                            </div>
+                                <div class="form-group">
+                                    <label for="inputPassword">Hasło:</label>
+                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                    <span class="help-block">Informacja z bazy danych..</span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                            <button type="button" class="btn btn-success">Wczytaj</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div style="margin: 0 40px">
-                <h3 class="text-center">Opcje</h3>
-
-                <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
-                <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
-                <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
-                <input class="btn btn-info btn-block" type="button" value="Udostępnij.." ng-click="share()">
+            <!-- Modal -->
+            <div class="modal fade" id="modal-share" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalShareLabel">Ustaw hasło dla udostępnienia</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="inputPassword">Hasło:</label>
+                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                    <span class="help-block">Informacja z bazy danych..</span>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                            <button type="button" class="btn btn-info">Udostępnij</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12" style="background-color: #eef; margin: 30px 0;">
+            <!-- Modal -->
+            <div class="modal fade" id="modal-generate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="select1">Nazwa kolumny:</label>
+                                <select class="form-control" id="select1">
+                                        <option ng-repeat="(key, value) in resources[0]">{{key}}</option>
+                                    </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                            <button type="button" class="btn btn-primary">Generuj (Android Studio)</button>
+                            <button type="button" class="btn btn-primary">Generuj (Visual Studio)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-10">
+
             <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
                 <tr>
                     <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
@@ -138,10 +156,10 @@
                     <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
                 </tr>
             </table>
+
         </div>
-        <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
     </div>
-    </div>
+
 
     <script>
         var app = angular.module('translationApp', []);
