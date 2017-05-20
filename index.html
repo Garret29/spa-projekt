@@ -23,119 +23,118 @@
         </div>
     </nav>
 
-    <div class="row">
+    <div class="container-fluid" style="padding: 0">
         <div class="col-md-2">
-            <div style="margin: 0 20px;">
+            <div >
 
-            <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
-            <label class="btn btn-default btn-block btn-file">
-                Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
-            </label>
-            <input type="button" class="btn btn-default btn-block" value="Importuj z bazy.." data-toggle="modal" data-target="#modal-load">
-            <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
-
-            <br />
-
-            <div class="checkbox text-center">
-                <label>
-                    <input type="checkbox"> Podpowiedzi z translatora
+                <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
+                <label class="btn btn-default btn-block btn-file">
+                    Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
                 </label>
-            </div>
+                <input type="button" class="btn btn-default btn-block" value="Importuj z bazy.." data-toggle="modal" data-target="#modal-load">
+                <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
 
-            <br />
+                <br />
 
-            <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
-            <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-generate">
-            <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
-            <input class="btn btn-info btn-block" type="button" value="Udostępnij.." ng-click="share()" data-toggle="modal" data-target="#modal-share">
-
-            <br />
-
-            <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
-
-            <!-- Modal -->
-            <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="inputID">ID:</label>
-                                    <input type="number" class="form-control" id="inputID" placeholder="ID">
-                                </div>
-                                <div class="form-group">
-                                    <label for="inputPassword">Hasło:</label>
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-success">Wczytaj</button>
-                        </div>
-                    </div>
+                <div class="checkbox text-center">
+                    <label>
+                        <input type="checkbox" ng-model="showTranslation"> Podpowiedzi z translatora
+                    </label>
                 </div>
-            </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="modal-share" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalShareLabel">Ustaw hasło dla udostępnienia</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="inputPassword">Hasło:</label>
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-info">Udostępnij</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <br />
 
-            <!-- Modal -->
-            <div class="modal fade" id="modal-generate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="select1">Nazwa kolumny:</label>
-                                <select class="form-control" id="select1">
-                                        <option ng-repeat="(key, value) in resources[0]">{{key}}</option>
-                                    </select>
+                <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
+                <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-generate">
+                <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
+                <input class="btn btn-info btn-block" type="button" value="Udostępnij.." data-toggle="modal" data-target="#modal-share">
+
+                <br />
+
+                <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
+
+                <!-- MODAL importowanie (z bazy danych) -->
+                <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="inputID">ID:</label>
+                                        <input type="number" class="form-control" id="inputID" placeholder="ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPassword">Hasło:</label>
+                                        <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                        <span class="help-block">Informacja z bazy danych..</span>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                                <button type="button" class="btn btn-success">Wczytaj</button>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-primary">Generuj (Android Studio)</button>
-                            <button type="button" class="btn btn-primary">Generuj (Visual Studio)</button>
+                    </div>
+                </div>
+
+                <!-- MODAL udostępnianie (zapis do bazy danych) -->
+                <div class="modal fade" id="modal-share" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modalShareLabel">Ustaw hasło dla udostępnienia</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="inputPassword">Hasło:</label>
+                                        <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                        <span class="help-block">Informacja z bazy danych..</span>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                                <button type="button" class="btn btn-info" ng-click="share()">Udostępnij</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL generowanie -->
+                <div class="modal fade" id="modal-generate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="select1">Nazwa kolumny:</label>
+                                    <select class="form-control" id="select1" ng-model="selectedColumn">
+                                        <option ng-repeat="(key, value) in resources[0]" ng-if="$index > 0">{{key}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                                <button type="button" class="btn btn-primary" ng-click="saveAsAS(selectedColumn)">Generuj (Android Studio)</button>
+                                <button type="button" class="btn btn-primary" ng-click="saveAsVS(selectedColumn)">Generuj (Visual Studio)</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
-
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-10" style="padding: 0;">
 
             <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
                 <tr>
@@ -146,7 +145,7 @@
                 </tr>
                 <tr ng-repeat="record in resources track by $index">
                     <td ng-repeat="(key, value) in record">
-                        <input type="text" ng-model="resources[$parent.$index][key]" ng-dblclick="showTranslations(this)" />
+                        <input type="text" ng-model="resources[$parent.$index][key]" ng-focus="translate($parent.$index, $index)" />
                     </td>
                     <td>
                         <button ng-click="resources.splice($index, 1)">Usuń</button>
@@ -227,25 +226,39 @@
                 }
             };
 
-            $scope.share = function () {
+            $scope.translate = function (row, column) {
+                if ($scope.showTranslation) {
 
+                    if (column > 1) {
+                        var sourceLang = Object.keys($scope.resources[0])[1];
+                        var targetLang = Object.keys($scope.resources[0])[column];
+                        var text = $scope.resources[row][Object.keys($scope.resources[0])[1]];
+
+                        console.log(sourceLang, targetLang, text);
+                    }
+                };
             };
 
-            $scope.showTranslations = function (handle) {
-
+            $scope.share = function () {
+                console.log("Udostępnianie.");
             };
 
             $scope.saveAsJSON = function () {
 
                 var json = { resources: $scope.resources };
                 var serializedJSON = JSON.stringify(json);
-                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
                 var filename = "resources";
                 download(filename + ".json", serializedJSON);
             }
 
-            $scope.save = function () {
+            $scope.saveAsAS = function (column) {
+                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                console.log("Wygenerowano dla AS.", column);
+            }
 
+            $scope.saveAsVS = function (column) {
+                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                console.log("Wygenerowano dla VS.", column);
             }
 
             $scope.saveToLocalStorage = function () {
