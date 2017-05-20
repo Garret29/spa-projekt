@@ -36,20 +36,12 @@
             </div>
         </div>
 
-        <div class="col-md-3" ng-controller="extensionRadioCtrl" ng-init="selectedButton='1'">
+        <div class="col-md-3">
             <div style="margin: 0 40px">
                 <h3 class="text-center">Importuj</h3>
 
-                <div class="radio" ng-repeat="item in radioButtons">
-                    <label>
-                            <input type="radio" name="extension" ng-model="selectedButton" ng-change="changeSelection(item.value)" value="{{item.value}}">{{item.text}}
-                        </label>
-                </div>
-                <tt>selectedButton = {{selectedButton}}</tt><br />
-                <tt>ext = {{radioButtons[selectedButton].extension}}</tt>
-
                 <label>
-                    <input type="file" accept="{{radioButtons[selectedButton].extension}}" onchange="angular.element(this).scope().loadData(this)">
+                    <input type="file" accept=".json,.xml,.resw" onchange="angular.element(this).scope().loadData(this)">
                 </label>
             </div>
         </div>
@@ -74,10 +66,7 @@
                                 <div class="form-group">
                                     <label for="select1">Nazwa kolumny:</label>
                                     <select class="form-control" id="select1">
-                                        <option>1</option>
-                                        <option>2</option>
-                                        <option>3</option>
-                                        <option>4</option>
+                                        <option ng-repeat="(key, value) in resources[0]">{{key}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -220,17 +209,6 @@
 
             };
         }]);
-
-        app.controller('extensionRadioCtrl', function ($scope) {
-            $scope.radioButtons = [
-                { text: "JSON", value: '0', extension: ".json" },
-                { text: "Android Studio", value: '1', extension: ".xml" },
-                { text: "Visual Studio (UWP)", value: '2', extension: ".resw" }
-            ];
-            $scope.changeSelection = function (index) {
-                $scope.selectedButton = index;
-            };
-        });
 
         app.controller('selectCtrl', function ($scope) {
             $scope.options = [
