@@ -15,24 +15,49 @@
 
 <body ng-app="translationApp" ng-controller="gridCtrl">
 
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">SPA Projekt</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="row">
 
         <div class="col-md-3">
             <div style="margin: 0 20px">
                 <h3 class="text-center">Wczytaj</h3>
 
-                <form>
-                    <div class="form-group">
-                        <label for="inputFormID">ID</label>
-                        <input type="number" class="form-control" id="inputFormID" placeholder="ID">
+                <input type="button" class="btn btn-default btn-block" value="Wczytaj.." data-toggle="modal" data-target="#modal-load">
+
+                <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
+                    <div class="modal-dialog modal-sm" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
+                            </div>
+                            <div class="modal-body">
+                               <form>
+                                    <div class="form-group">
+                                        <label for="inputID">ID:</label>
+                                        <input type="number" class="form-control" id="inputID" placeholder="ID">
+                                    </div>
+                                    <div class="form-group">
+                                         <label for="inputPassword">Hasło:</label>
+                                        <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                        <span class="help-block">Informacja z bazy danych..</span>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                                <button type="button" class="btn btn-success">Wczytaj</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputFormPassword">Password</label>
-                        <input type="password" class="form-control" id="inputFormPassword" placeholder="Hasło">
-                        <span class="help-block">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
-                    </div>
-                    <input type="button" class="btn btn-success" value="Wczytaj">
-                </form>
+                </div>
             </div>
         </div>
 
@@ -40,8 +65,8 @@
             <div style="margin: 0 40px">
                 <h3 class="text-center">Importuj</h3>
 
-                <label>
-                    <input type="file" accept=".json,.xml,.resw" onchange="angular.element(this).scope().loadData(this)">
+                <label class="btn btn-danger btn-block btn-file">
+                    Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
                 </label>
             </div>
         </div>
@@ -51,11 +76,10 @@
                 <h3 class="text-center">Zapisz</h3>
 
                 <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
-                <input class="btn btn-default btn-block" type="button" value="Generuj (Android Studio)" data-toggle="modal" data-target="#myModal">
-                <input class="btn btn-default btn-block" type="button" value="Generuj (Visual Studio)" data-toggle="modal" data-target="#myModal">
+                <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-save">
 
                 <!-- Modal -->
-                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal fade" id="modal-save" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -72,7 +96,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                                <button type="button" class="btn btn-primary">Generuj</button>
+                                <button type="button" class="btn btn-primary">Generuj (Android Studio)</button>
+                                <button type="button" class="btn btn-primary">Generuj (Visual Studio)</button>
                             </div>
                         </div>
                     </div>
@@ -87,7 +112,7 @@
                 <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
                 <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
                 <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
-                <input class="btn btn-info btn-block" type="button" value="Udostępnij">
+                <input class="btn btn-info btn-block" type="button" value="Udostępnij.." ng-click="share()">
             </div>
         </div>
     </div>
@@ -126,15 +151,6 @@
 
             $scope.clearGrid = function () {
                 $scope.resources = [{ name: '' }];
-            }
-
-            $scope.saveAsJSON = function () {
-
-                var json = { resources: $scope.resources };
-                var serializedJSON = JSON.stringify(json);
-                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
-                var filename = "resources";
-                download(filename + ".json", serializedJSON);
             }
 
             $scope.addResource = function () {
@@ -177,7 +193,6 @@
                         } else if (file.name.endsWith(".resw")) {
                             var xmlDoc = new DOMParser().parseFromString(evt.target.result, "text/xml");
                             result = converter.fromVisualStudioFormat(xmlDoc);
-
                         }
 
                         $scope.$apply(function () {
@@ -194,6 +209,27 @@
                 }
             };
 
+            $scope.share = function () {
+
+            };
+
+            $scope.showTranslations = function (handle) {
+
+            };
+
+            $scope.saveAsJSON = function () {
+
+                var json = { resources: $scope.resources };
+                var serializedJSON = JSON.stringify(json);
+                // xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                var filename = "resources";
+                download(filename + ".json", serializedJSON);
+            }
+
+            $scope.save = function () {
+
+            }
+
             $scope.saveToLocalStorage = function () {
                 var serializedJSON = JSON.stringify($scope.resources);
                 localStorage.setItem("translations", serializedJSON)
@@ -204,10 +240,6 @@
                 if (serializedJSON != null)
                     $scope.resources = JSON.parse(serializedJSON);
             }
-
-            $scope.showTranslations = function (handle) {
-
-            };
         }]);
 
         app.controller('selectCtrl', function ($scope) {
