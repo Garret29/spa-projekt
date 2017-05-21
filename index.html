@@ -10,16 +10,22 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="converter.js"></script>
+    <script>
+        var config = { url: 'database_service.php' };
+    </script>
     <title>SPA Projekt</title>
 </head>
 
-<body ng-app="translationApp" ng-controller="gridCtrl">
+<body ng-app="translationApp" ng-controller="gridCtrl" ng-init="isLoadedFromDatabase='false'">
 
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">SPA Projekt</a>
             </div>
+            <p class="navbar-text">
+                <span class="glyphicon glyphicon glyphicon-globe" aria-hidden="true"></span> {{id}}         
+            </p>
             <div id="translation"></div>
         </div>
     </nav>
@@ -70,13 +76,13 @@
                                 <div class="form-group">
                                     <label for="inputPassword">Hasło:</label>
                                     <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
+                                    <span class="help-block" id="infoLoadDatabase">Informacja z bazy danych..</span>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-success">Wczytaj</button>
+                            <button type="button" class="btn btn-success" ng-click="loadFromDatabase()">Wczytaj</button>
                         </div>
                     </div>
                 </div>
@@ -93,9 +99,9 @@
                         <div class="modal-body">
                             <form>
                                 <div class="form-group">
-                                    <label for="inputPassword">Hasło:</label>
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
+                                    <label for="inputPassword2">Hasło:</label>
+                                    <input type="password" class="form-control" id="inputPassword2" placeholder="Hasło">
+                                    <span class="help-block" id="infoSaveDatabase">Informacja z bazy danych..</span>
                                 </div>
                             </form>
                         </div>
@@ -186,6 +192,7 @@
 
             $scope.clearGrid = function () {
                 $scope.resources = [{ name: '' }];
+                $scope.isLoadedFromDatabase = false;
             }
 
             $scope.addResource = function () {
@@ -215,9 +222,11 @@
                         if ($scope.fileType == 'xml') {
                             var xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
                             $scope.resources = converter.fromAndroidStudioFormat(xmlDoc, lang.value);
+                            $scope.isLoadedFromDatabase = false;
                         } else if ($scope.fileType == 'resw') {
                             var xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
                             $scope.resources = converter.fromVisualStudioFormat(xmlDoc, lang.value);
+                            $scope.isLoadedFromDatabase = false;
                         }
                     }
                 }
@@ -239,6 +248,8 @@
                             $scope.$apply(function () {
                                 $scope.resources = result;
                             });
+
+                            $scope.isLoadedFromDatabase = false;
 
                         } else if (file.name.endsWith(".xml")) {
                             $scope.fileType = 'xml';
@@ -282,7 +293,6 @@
                                 to: targetLang
                             },
                             success: function (response) {
-                                //console.log(response.translationText);
                                 $('#translation').append(
                                     '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
                                     response.translationText +
@@ -302,29 +312,83 @@
                                 q: text
                             },
                             success: function (response) {
-                                //console.log(response[0][0][0]);
-                                 $('#translation').append(
+                                $('#translation').append(
                                     '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
                                     response[0][0][0] +
                                     '</p>'
                                 );
                             }
                         });
-                        //console.log(sourceLang, targetLang, text);
                     }
                 };
             };
 
             $scope.share = function () {
-                console.log("Udostępnianie.");
+
+                var requestData;
+                if ($scope.isLoadedFromDatabase == true) {
+                    requestData = {
+                        protokol: 'change-record',
+                        password: document.getElementById('inputPassword2').value,
+                        serializedContent: JSON.stringify({ resources: $scope.resources }),
+                        id: $scope.id
+                    }
+                } else {
+                    requestData = {
+                        protokol: 'add-record',
+                        password: document.getElementById('inputPassword2').value,
+                        serializedContent: JSON.stringify({ resources: $scope.resources })
+                    }
+                }
+                console.log($scope.isLoadedFromDatabase, requestData);
+
+                $.ajax({
+                    url: config.url,
+                    method: 'post',
+                    data: requestData,
+                    success: function (response) {
+                        document.getElementById('infoSaveDatabase').textContent = response.message;
+
+                        if (response.id != null) {
+                            $scope.$apply(function () {
+                                $scope.id = response.id;
+                            });
+                            $scope.isLoadedFromDatabase = true;
+                        };
+                    }
+                });
             };
+
+            $scope.loadFromDatabase = function () {
+                $.ajax({
+                    url: config.url,
+                    method: 'post',
+                    data: {
+                        protokol: 'get-record',
+                        id: parseInt(document.getElementById('inputID').value),
+                        password: document.getElementById('inputPassword').value
+                    },
+                    success: function (response) {
+                        document.getElementById('infoLoadDatabase').textContent = response.message;
+                        if (response.grid != null) {
+                            $scope.$apply(function () {
+                                $scope.resources = JSON.parse(response.grid).resources;
+                            });
+                            $scope.$apply(function () {
+                                $scope.id = response.id;
+                            });
+                            $scope.isLoadedFromDatabase = true;
+                        };
+                    }
+                });
+            }
 
             $scope.saveAsJSON = function () {
 
                 var json = { resources: $scope.resources };
                 var serializedJSON = JSON.stringify(json);
                 var filename = "resources";
-                download(filename + ".json", serializedJSON);
+                downloadHelper.download(filename + ".json", serializedJSON);
             }
 
             $scope.saveAsAS = function (column) {
@@ -333,8 +397,7 @@
                     var xmlText = new XMLSerializer().serializeToString(xml);
                     xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
                     var filename = "strings";
-                    download(filename + ".xml", xmlText);
-                    //console.log(column, xmlText);
+                    downloadHelper.download(filename + ".xml", xmlText);
                 }
             }
 
@@ -344,8 +407,7 @@
                     var xmlText = new XMLSerializer().serializeToString(xml);
                     xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
                     var filename = "Resources";
-                    download(filename + ".resw", xmlText);
-                    //console.log(column, xmlText);
+                    downloadHelper.download(filename + ".resw", xmlText);
                 }
             }
 
@@ -358,6 +420,8 @@
                 var serializedJSON = localStorage.getItem("translations");
                 if (serializedJSON != null)
                     $scope.resources = JSON.parse(serializedJSON);
+
+                $scope.isLoadedFromDatabase = false;
             }
         }]);
 
@@ -415,17 +479,19 @@
             $scope.selectedItem = $scope.options[0];
         });
 
-        function download(filename, text) {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
+        var downloadHelper = {
+            download: function (filename, text) {
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
 
-            element.style.display = 'none';
-            document.body.appendChild(element);
+                element.style.display = 'none';
+                document.body.appendChild(element);
 
-            element.click();
+                element.click();
 
-            document.body.removeChild(element);
+                document.body.removeChild(element);
+            }
         }
     </script>
 </body>
