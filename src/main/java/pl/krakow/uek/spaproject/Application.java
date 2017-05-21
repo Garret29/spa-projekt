@@ -38,4 +38,9 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    @Bean
+    CommandLineRunner init() {
+        return (evt) -> System.out.println("Serwer uruchomiony, aplikacja działa na stronie localhost:8080");
+    }
+
 }
