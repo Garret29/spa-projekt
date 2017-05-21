@@ -30,8 +30,6 @@ class SQLite_Database {
 
     public function getRecords() {
         $query = $this->pdo->prepare('SELECT * FROM records');
-        $query->bindValue(':id', $id, PDO::PARAM_INT);
-        $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
         if ($query->execute())
             return $query->fetchAll(PDO::FETCH_ASSOC);
         else
@@ -63,16 +61,14 @@ class SQLite_Database {
 
     public function changeRecordAndGetHisId($id, $sPassword, $sSerializedContent) {
         $query = $this->pdo->prepare(
-            'UPDATE records
-            SET serialized = :serializedContent
-            WHERE id = :id AND password = :password
-            LIMIT 1'
+            'UPDATE records SET serializedContent = :serializedContent
+            WHERE id = :id AND password = :password'
         );
         $query->bindValue(':id', $id, PDO::PARAM_INT);
         $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
         $query->bindValue(':serializedContent', $sSerializedContent, PDO::PARAM_STR);
-        if ($query->execute())
-            return $row['id'];
+        if ($query->execute() && $query->rowCount() > 0)
+            return $id;
         else
             return false;
     }
