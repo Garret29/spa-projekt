@@ -17,6 +17,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    /*
     @Bean
     CommandLineRunner init(TranslationsRepository translationsRepository) {
 
@@ -29,11 +30,9 @@ public class Application {
         }
 
         String json = stringBuilder.toString();
-        return (evt) -> Arrays.asList(
-                "garret29,danbraj".split(","))
+        return (evt) -> Arrays.asList(new Long[]{123L, 456L})
                 .forEach(
-                        a -> {
-                            translationsRepository.save(new TranslationData(a, json));
-                        });
+                        a -> translationsRepository.save(new TranslationData(a, json)));
     }
+    */
 }
