@@ -33,7 +33,13 @@ public class TranslationController {
     @RequestMapping(method = RequestMethod.POST, value = "/translations", consumes = {"application/json; charset=UTF-8"})
     public ResponseEntity<?> add(@RequestBody String serializedData) {
         JSONObject jsonObject = new JSONObject(serializedData);
-        TranslationData translationData = new TranslationData(jsonObject.getString("password"), jsonObject.getString("serializedJSON").replaceAll(" ", ""));
+        TranslationData translationData;
+
+        if (!jsonObject.has("id")){
+            translationData = new TranslationData(jsonObject.getString("password"), jsonObject.getString("serializedJSON").replaceAll(" ", ""));
+        } else {
+            translationData = new TranslationData(jsonObject.getLong("id") ,jsonObject.getString("password"), jsonObject.getString("serializedJSON").replaceAll(" ", ""));
+        }
         this.translationsRepository.save(translationData);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/" + translationData.getId()).build().toUri();
 
