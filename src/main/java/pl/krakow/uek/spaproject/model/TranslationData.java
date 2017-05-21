@@ -6,14 +6,14 @@ import javax.persistence.*;
 public class TranslationData {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column
     private String password;
 
     @Lob
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String translationsSerializedJSON;
 
     public TranslationData() { //Jpa only
