@@ -22,7 +22,7 @@ public class Application {
         final JSch jsch = new JSch();
         Session session = null;
         try {
-            session = jsch.getSession("username", "@host", 22);
+            session = jsch.getSession("username", "host", 22);
 
             session.setPassword("password");
 
@@ -31,7 +31,7 @@ public class Application {
             session.setConfig(config);
 
             session.connect();
-            session.setPortForwardingL(5433, "db host", 5432);
+            session.setPortForwardingL(5433, "dbhost", 5432);
         } catch (JSchException e) {
             e.printStackTrace();
         }
