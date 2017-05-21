@@ -2,34 +2,28 @@
 
 header("Content-Type: application/json; charset=UTF-8");
 
-if (isset($_GET['q']) && is_numeric($_GET['q'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $id = $_GET['q'];
+    if (isset($_POST['protokol'])) {
 
-    require_once 'SQLite_Database.php';
-    $oDatabase = SQLite_Database::prepareDatabase();
+        require_once 'SQLite_Database.php';
+        $oDatabase = SQLite_Database::prepareDatabase();
 
-    if ($row = $oDatabase->getRecordAssocById($id)) 
-        echo json_encode($row);
-    else {
-        $result['response'] = "Nie ma zapisanego rekordu o takim id.";
-        echo json_encode($result);
-    }
+        if ($_POST['protokol'] == "get-record") {
+            if (isset($_POST['id']) && is_numeric($_POST['id']) && isset($_POST['password'])) {
 
-} else if (isset($_POST['serializedContent']) && isset($_POST['password'])) {
+                if ($row = $oDatabase->getRecord($_POST['id'], $_POST['password'])) {
+                    $result['id'] = $row['id'];
+                    $result['grid'] = $row['serializedContent'];
+                    $result['message'] = "Wykonano pomyślnie";
+                } else $result['message'] = "Nie ma zapisanego rekordu o takim id.";
+            }
+        } else if (false) {
 
-    $row['password'] = $_POST['password'];
-    $row['serializedContent'] = $_POST['serializedContent'];
-
-    require_once 'SQLite_Database.php';
-    $oDatabase = SQLite_Database::prepareDatabase();
-
-    $result['lastId'] = $oDatabase->addRecordAndGetHisId($row);
-    echo json_encode($result);
-
-} else {
-
-    $result['response'] = "Brak requestu..";
+        } else if (false) {
+            
+        } else $result['message'] = "Czym baza danych może służyć..?";
+    } else $result['message'] = "Nie, nie, tak requestów nie wysyłamy..";
     echo json_encode($result);
 }
 

@@ -6,7 +6,7 @@ class SQLite_Database {
 
     public function connectDataBase() {
         try {
-            $this->pdo = new PDO("sqlite:database.sqlite");
+            $this->pdo = new PDO("sqlite:database_name.sqlite");
         }
         catch (PDOException $e) {
             echo $e->getMessage();
@@ -28,22 +28,43 @@ class SQLite_Database {
         $this->pdo->exec("DROP TABLE records");
     }
 
-    public function getRecordAssocById($id) {
-        $query = $this->pdo->prepare('SELECT * FROM records WHERE id = :id LIMIT 1');
+    public function getRecord($id, $sPassword) {
+        $query = $this->pdo->prepare('SELECT * FROM records WHERE id = :id AND password = :password LIMIT 1');
         $query->bindValue(':id', $id, PDO::PARAM_INT);
-        $query->execute();
-        return $query->fetch(PDO::FETCH_ASSOC);
+        $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
+        if ($query->execute())
+            return $query->fetch(PDO::FETCH_ASSOC);
+        else
+            return false;
     }
 
-    public function addRecordAndGetHisId($row) {
+    public function addRecordAndGetHisId($sPassword, $sSerializedContent) {
         $query = $this->pdo->prepare(
             'INSERT INTO records (password, serializedContent)
             VALUES (:password, :serializedContent)'
         );
-        $query->bindValue(':password', $row['password'], PDO::PARAM_STR);
-        $query->bindValue(':serializedContent', $row['serializedContent'], PDO::PARAM_STR);
-        $query->execute();
-        return $this->pdo->lastInsertId();
+        $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
+        $query->bindValue(':serializedContent', $sSerializedContent, PDO::PARAM_STR);
+        if ($query->execute())
+            return $this->pdo->lastInsertId();
+        else
+            return false;
+    }
+
+    public function changeRecordAndGetHisId($id, $sPassword, $sSerializedContent) {
+        $query = $this->pdo->prepare(
+            'UPDATE records
+            SET serialized = :serializedContent
+            WHERE id = :id AND password = :password
+            LIMIT 1'
+        );
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
+        $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
+        $query->bindValue(':serializedContent', $sSerializedContent, PDO::PARAM_STR);
+        if ($query->execute())
+            return $row['id'];
+        else
+            return false;
     }
 
     public static function prepareDatabase() {
