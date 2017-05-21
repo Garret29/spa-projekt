@@ -28,6 +28,16 @@ class SQLite_Database {
         $this->pdo->exec("DROP TABLE records");
     }
 
+    public function getRecords() {
+        $query = $this->pdo->prepare('SELECT * FROM records');
+        $query->bindValue(':id', $id, PDO::PARAM_INT);
+        $query->bindValue(':password', $sPassword, PDO::PARAM_STR);
+        if ($query->execute())
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        else
+            return false;
+    }
+
     public function getRecord($id, $sPassword) {
         $query = $this->pdo->prepare('SELECT * FROM records WHERE id = :id AND password = :password LIMIT 1');
         $query->bindValue(':id', $id, PDO::PARAM_INT);

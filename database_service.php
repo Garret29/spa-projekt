@@ -18,13 +18,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $result['message'] = "Wykonano pomyślnie";
                 } else $result['message'] = "Nie ma zapisanego rekordu o takim id.";
             }
-        } else if (false) {
+        } else if ($_POST['protokol'] == "add-record") {
+            if (isset($_POST['password']) && isset($_POST['serializedContent'])) {
 
-        } else if (false) {
+                if ($id = $oDatabase->addRecordAndGetHisId($_POST['password'], $_POST['serializedContent'])) {
+                    $result['id'] = $id;
+                    $result['message'] = "Udostępnienie jest dostępne pod ID: " + $id;
+                } else $result['message'] = "Coś poszło nie tak.";
+            }
+        } else if ($_POST['protokol'] == "change-record") {
+            if (isset($_POST['id']) && is_numeric($_POST['id']) && isset($_POST['password']) && isset($_POST['serializedContent'])) {
             
+                if ($id = $oDatabase->changeRecordAndGetHisId($_POST['id'], $_POST['password'], $_POST['serializedContent'])) {
+                    $result['id'] = $id;
+                    $result['message'] = "Udostępnienie tak jak zawsze, czyli " + $id + " ;)";
+                } else $result['message'] = "Prawdopodobnie hasło się nie zgadza.";
+            }
         } else $result['message'] = "Czym baza danych może służyć..?";
     } else $result['message'] = "Nie, nie, tak requestów nie wysyłamy..";
     echo json_encode($result);
+
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET') { 
+
+    if (isset($_GET['pass']) && $_GET['pass'] == 'asqwerty') {
+
+        require_once 'SQLite_Database.php';
+        $oDatabase = SQLite_Database::prepareDatabase();
+        print_r($oDatabase->getRecords());
+    }
 }
 
 ?>
