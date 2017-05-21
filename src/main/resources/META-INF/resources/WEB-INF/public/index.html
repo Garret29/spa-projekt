@@ -15,419 +15,491 @@
 
 <body ng-app="translationApp" ng-controller="gridCtrl">
 
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">SPA Projekt</a>
-            </div>
-            <div id="translation"></div>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">SPA Projekt</a>
         </div>
-    </nav>
+        <div id="translation"></div>
+    </div>
+</nav>
 
-    <div class="container-fluid" style="padding: 0">
-        <div class="col-md-2">
+<div class="container-fluid" style="padding: 0">
+    <div class="col-md-2">
 
-            <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
-            <label class="btn btn-default btn-block btn-file">
-                Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;" onchange="angular.element(this).scope().loadData(this)">
+        <input class="btn btn-warning btn-block" type="button" value="Nowa" ng-click="clearGrid()">
+        <label class="btn btn-default btn-block btn-file">
+            Importuj z pliku.. <input type="file" accept=".json,.xml,.resw" style="display: none;"
+                                      onchange="angular.element(this).scope().loadData(this)">
+        </label>
+        <input type="button" class="btn btn-default btn-block" value="Importuj z bazy.." data-toggle="modal"
+               data-target="#modal-load">
+        <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki"
+               ng-click="loadFromLocalStorage()">
+
+        <br/>
+
+        <div class="checkbox text-center">
+            <label>
+                <input type="checkbox" ng-model="showTranslation"> Podpowiedzi z translatora
             </label>
-            <input type="button" class="btn btn-default btn-block" value="Importuj z bazy.." data-toggle="modal" data-target="#modal-load">
-            <input class="btn btn-default btn-block" type="button" value="Wczytaj z przeglądarki" ng-click="loadFromLocalStorage()">
+        </div>
 
-            <br />
+        <br/>
 
-            <div class="checkbox text-center">
-                <label>
-                    <input type="checkbox" ng-model="showTranslation"> Podpowiedzi z translatora
-                </label>
-            </div>
+        <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
+        <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal"
+               data-target="#modal-generate">
+        <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce"
+               ng-click="saveToLocalStorage()">
+        <input class="btn btn-info btn-block" type="button" value="Udostępnij.." id="share" data-toggle="modal"
+               data-target="#modal-share">
 
-            <br />
+        <br/>
 
-            <input class="btn btn-primary btn-block" type="button" value="Generuj jako JSON" ng-click="saveAsJSON()">
-            <input class="btn btn-default btn-block" type="button" value="Generuj jako.." data-toggle="modal" data-target="#modal-generate">
-            <input class="btn btn-default btn-block" type="button" value="Zapisz w przeglądarce" ng-click="saveToLocalStorage()">
-            <input class="btn btn-info btn-block" type="button" value="Udostępnij.." id="share" data-toggle="modal" data-target="#modal-share">
+        <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
 
-            <br />
-
-            <p class="text-center">SPA Projekt (2017) © Dziękujemy za wizytę!</p>
-
-            <!-- MODAL importowanie (z bazy danych) -->
-            <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="inputID">ID:</label>
-                                    <input type="number" class="form-control" id="inputID" placeholder="ID">
-                                </div>
-                                <div class="form-group">
-                                    <label for="inputPassword">Hasło:</label>
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-success">Wczytaj</button>
-                        </div>
+        <!-- MODAL importowanie (z bazy danych) -->
+        <div class="modal fade" id="modal-load" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalLoadLabel">Wczytaj z bazy danych</h4>
                     </div>
-                </div>
-            </div>
-
-            <!-- MODAL udostępnianie (zapis do bazy danych) -->
-            <div class="modal fade" id="modal-share" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalShareLabel">Ustaw hasło dla udostępnienia</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <label for="inputPassword2">Hasło:</label>
-                                    <input type="password" class="form-control" id="inputPassword2" placeholder="Hasło">
-                                    <span class="help-block">Informacja z bazy danych..</span>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-info" ng-click="share()">Udostępnij</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODAL generowanie -->
-            <div class="modal fade" id="modal-generate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
-                        </div>
-                        <div class="modal-body">
+                    <div class="modal-body">
+                        <form>
                             <div class="form-group">
-                                <label for="select1">Nazwa kolumny:</label>
-                                <select class="form-control" id="select1" ng-model="selectedColumn">
-                                    <option ng-repeat="(key, value) in resources[0]" ng-if="$index > 0">{{key}}</option>
-                                </select>
+                                <label for="inputID">ID:</label>
+                                <input type="number" class="form-control" id="inputID" placeholder="ID">
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
-                            <button type="button" class="btn btn-primary" ng-click="saveAsAS(selectedColumn)">Generuj (Android Studio)</button>
-                            <button type="button" class="btn btn-primary" ng-click="saveAsVS(selectedColumn)">Generuj (Visual Studio)</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODAL ustawienie języka -->
-            <div class="modal fade" id="modal-set-lang" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content" ng-controller="selectCtrl">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel">Wybierz język główny</h4>
-                        </div>
-                        <div class="modal-body">
                             <div class="form-group">
-                                <label for="selectLang">Język:</label>
-                                <select class="form-control" id="selectLang" ng-options="x.text for x in options" ng-model="selectedMainLang"></select>
+                                <label for="inputPassword">Hasło:</label>
+                                <input type="password" class="form-control" id="inputPassword" placeholder="Hasło">
+                                <span class="help-block">Informacja z bazy danych..</span>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" ng-click="setMainLang(selectedMainLang)">Ustaw język</button>
-                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                        <button type="button" class="btn btn-success" ng-click="loadFromDatabase()">Wczytaj</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-10" style="padding: 0;">
+        <!-- MODAL udostępnianie (zapis do bazy danych) -->
+        <div class="modal fade" id="modal-share" tabindex="-1" role="dialog" aria-labelledby="modalShareLabel">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalShareLabel">Ustaw hasło dla udostępnienia</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="inputPassword2">Hasło:</label>
+                                <input type="password" class="form-control" id="inputPassword2" placeholder="Hasło">
+                                <span class="help-block">Informacja z bazy danych..</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                        <button type="button" class="btn btn-info" ng-click="share()">Udostępnij</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
-                <tr>
-                    <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
-                    <th>
-                        <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options" ng-change="addLang(selectedItem.value)"></select>
-                    </th>
-                </tr>
-                <tr ng-repeat="record in resources track by $index">
-                    <td ng-repeat="(key, value) in record">
-                        <input type="text" ng-model="resources[$parent.$index][key]" ng-focus="translate($parent.$index, $index)" />
-                    </td>
-                    <td>
-                        <button ng-hide="$first" ng-click="resources.splice($index, 1)">Usuń</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj" ng-click="addResource()"></td>
-                </tr>
-            </table>
+        <!-- MODAL generowanie -->
+        <div class="modal fade" id="modal-generate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Wybierz, którą kolumnę chcesz zapisać</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="select1">Nazwa kolumny:</label>
+                            <select class="form-control" id="select1" ng-model="selectedColumn">
+                                <option ng-repeat="(key, value) in resources[0]" ng-if="$index > 0">{{key}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Powrót</button>
+                        <button type="button" class="btn btn-primary" ng-click="saveAsAS(selectedColumn)">Generuj
+                            (Android Studio)
+                        </button>
+                        <button type="button" class="btn btn-primary" ng-click="saveAsVS(selectedColumn)">Generuj
+                            (Visual Studio)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- MODAL ustawienie języka -->
+        <div class="modal fade" id="modal-set-lang" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" ng-controller="selectCtrl">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Wybierz język główny</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="selectLang">Język:</label>
+                            <select class="form-control" id="selectLang" ng-options="x.text for x in options"
+                                    ng-model="selectedMainLang"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" ng-click="setMainLang(selectedMainLang)">Ustaw
+                            język
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        var app = angular.module('translationApp', []);
+    <div class="col-md-10" style="padding: 0;">
 
-        app.controller('gridCtrl', ['$scope', function ($scope) {
-            $scope.resources = [{ name: '' }];
+        <table class="table" style="display: block; overflow-x: auto; margin-bottom: 0;">
+            <tr>
+                <th ng-repeat="(key, value) in resources[0]">{{key}}</th>
+                <th>
+                    <select ng-controller="selectCtrl" ng-model="selectedItem" ng-options="x.text for x in options"
+                            ng-change="addLang(selectedItem.value)"></select>
+                </th>
+            </tr>
+            <tr ng-repeat="record in resources track by $index">
+                <td ng-repeat="(key, value) in record">
+                    <input type="text" ng-model="resources[$parent.$index][key]"
+                           ng-focus="translate($parent.$index, $index)"/>
+                </td>
+                <td>
+                    <button ng-hide="$first" ng-click="resources.splice($index, 1)">Usuń</button>
+                </td>
+            </tr>
+            <tr>
+                <td><input class="btn btn-default" type="button" style="width: 100%" value="Dodaj"
+                           ng-click="addResource()"></td>
+            </tr>
+        </table>
 
-            $scope.clearGrid = function () {
-                $scope.resources = [{ name: '' }];
+    </div>
+</div>
+
+<script>
+    const app = angular.module('translationApp', []);
+
+    app.controller('gridCtrl', ['$scope', function ($scope) {
+        $scope.resources = [{name: ''}];
+
+        $scope.clearGrid = function () {
+            $scope.resources = [{name: ''}];
+        };
+
+        $scope.addResource = function () {
+
+            const source = $scope.resources[0];
+            const emptyObject = {};
+            for (let key in source) {
+                if (source.hasOwnProperty(key)) {
+                    emptyObject[key] = '';
+                }
             }
+            $scope.resources.push(emptyObject);
+        };
 
-            $scope.addResource = function () {
+        $scope.addLang = function (lang) {
+            if (lang !== '') {
+                let i = 0;
+                const k = $scope.resources.length;
+                for (; i < k; i++)
+                    if (!$scope.resources[i][lang])
+                        $scope.resources[i][lang] = '';
+            }
+        };
 
-                var source = $scope.resources[0];
-                var emptyObject = {};
-                for (var key in source) {
-                    if (source.hasOwnProperty(key)) {
-                        emptyObject[key] = '';
+        $scope.setMainLang = function (lang) {
+            let xmlDoc;
+            if (lang !== null && lang.value !== '') {
+                if ($scope.fileType !== null) {
+
+                    if ($scope.fileType === 'xml') {
+                        xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
+                        $scope.resources = converter.fromAndroidStudioFormat(xmlDoc, lang.value);
+                    } else if ($scope.fileType === 'resw') {
+                        xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
+                        $scope.resources = converter.fromVisualStudioFormat(xmlDoc, lang.value);
                     }
                 }
-                $scope.resources.push(emptyObject);
             }
+        };
 
-            $scope.addLang = function (lang) {
-                if (lang != '') {
-                    for (var i = 0, k = $scope.resources.length; i < k; i++)
-                        if (!$scope.resources[i][lang])
-                            $scope.resources[i][lang] = '';
-                }
-            }
+        $scope.loadData = function (input) {
+            const file = input.files[0];
 
-            $scope.setMainLang = function (lang) {
-                if (lang != null && lang.value != '') {
-                    if ($scope.fileType != null) {
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
 
-                        if ($scope.fileType == 'xml') {
-                            var xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
-                            $scope.resources = converter.fromAndroidStudioFormat(xmlDoc, lang.value);
-                        } else if ($scope.fileType == 'resw') {
-                            var xmlDoc = new DOMParser().parseFromString($scope.fileContent, "text/xml");
-                            $scope.resources = converter.fromVisualStudioFormat(xmlDoc, lang.value);
-                        }
-                    }
-                }
-            }
+                reader.onload = function (evt) {
+                    let result = [{name: ''}];
 
-            $scope.loadData = function (input) {
-                var file = input.files[0];
+                    if (file.name.endsWith(".json")) {
+                        result = JSON.parse(evt.target.result).resources;
 
-                if (file) {
-                    var reader = new FileReader();
-                    reader.readAsText(file, "UTF-8");
-
-                    reader.onload = function (evt) {
-                        var result = [{ name: '' }];
-
-                        if (file.name.endsWith(".json")) {
-                            result = JSON.parse(evt.target.result).resources;
-
-                            $scope.$apply(function () {
-                                $scope.resources = result;
-                            });
-
-                        } else if (file.name.endsWith(".xml")) {
-                            $scope.fileType = 'xml';
-                            $scope.fileContent = evt.target.result;
-                            $('#modal-set-lang').modal('show');
-
-                        } else if (file.name.endsWith(".resw")) {
-                            $scope.fileType = 'resw';
-                            $scope.fileContent = evt.target.result;
-                            $('#modal-set-lang').modal('show');
-                        }
-
-                        input.value = '';
-                    };
-                    reader.onerror = function (evt) {
                         $scope.$apply(function () {
-                            $scope.resources = [{ name: '' }];
+                            $scope.resources = result;
                         });
-                        input.value = '';
+
+                    } else if (file.name.endsWith(".xml")) {
+                        $scope.fileType = 'xml';
+                        $scope.fileContent = evt.target.result;
+                        $('#modal-set-lang').modal('show');
+
+                    } else if (file.name.endsWith(".resw")) {
+                        $scope.fileType = 'resw';
+                        $scope.fileContent = evt.target.result;
+                        $('#modal-set-lang').modal('show');
                     }
-                }
-            };
 
-            $scope.translate = function (row, column) {
-
-                if ($scope.showTranslation) {
-                    if (column > 1) {
-
-                        var sourceLang = Object.keys($scope.resources[0])[1];
-                        var targetLang = Object.keys($scope.resources[0])[column];
-                        var text = $scope.resources[row][Object.keys($scope.resources[0])[1]];
-
-                        $('#translation').text('');
-
-                        $.ajax({
-                            url: 'http://www.transltr.org/api/translate',
-                            method: 'post',
-                            data: {
-                                text: text,
-                                from: sourceLang,
-                                to: targetLang
-                            },
-                            success: function (response) {
-                                //console.log(response.translationText);
-                                $('#translation').append(
-                                    '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
-                                    response.translationText +
-                                    '</p>'
-                                );
-                            }
-                        });
-
-                        $.ajax({
-                            url: 'https://translate.googleapis.com/translate_a/single',
-                            method: 'get',
-                            data: {
-                                client: 'gtx',
-                                sl: sourceLang,
-                                tl: targetLang,
-                                dt: 't',
-                                q: text
-                            },
-                            success: function (response) {
-                                //console.log(response[0][0][0]);
-                                 $('#translation').append(
-                                    '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
-                                    response[0][0][0] +
-                                    '</p>'
-                                );
-                            }
-                        });
-                        //console.log(sourceLang, targetLang, text);
-                    }
+                    input.value = '';
                 };
-            };
-
-            $scope.share = function () {
-                console.log("Udostępnianie.");
-            };
-
-            $scope.saveAsJSON = function () {
-
-                var json = { resources: $scope.resources };
-                var serializedJSON = JSON.stringify(json);
-                var filename = "resources";
-                download(filename + ".json", serializedJSON);
-            }
-
-            $scope.saveAsAS = function (column) {
-                if (column != null) {
-                    var xml = converter.toAndroidStudioFormat($scope.resources, column);
-                    var xmlText = new XMLSerializer().serializeToString(xml);
-                    xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
-                    var filename = "strings";
-                    download(filename + ".xml", xmlText);
-                    //console.log(column, xmlText);
+                reader.onerror = function () {
+                    $scope.$apply(function () {
+                        $scope.resources = [{name: ''}];
+                    });
+                    input.value = '';
                 }
             }
+        };
 
-            $scope.saveAsVS = function (column) {
-                if (column != null) {
-                    var xml = converter.toVisualStudioFormat($scope.resources, column);
-                    var xmlText = new XMLSerializer().serializeToString(xml);
-                    xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
-                    var filename = "Resources";
-                    download(filename + ".resw", xmlText);
-                    //console.log(column, xmlText);
+        $scope.translate = function (row, column) {
+
+            if ($scope.showTranslation) {
+                if (column > 1) {
+
+                    const sourceLang = Object.keys($scope.resources[0])[1];
+                    const targetLang = Object.keys($scope.resources[0])[column];
+                    const text = $scope.resources[row][Object.keys($scope.resources[0])[1]];
+
+                    $('#translation').text('');
+
+                    $.ajax({
+                        url: 'http://www.transltr.org/api/translate',
+                        method: 'post',
+                        data: {
+                            text: text,
+                            from: sourceLang,
+                            to: targetLang
+                        },
+                        success: function (response) {
+                            //console.log(response.translationText);
+                            $('#translation').append(
+                                '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
+                                response.translationText +
+                                '</p>'
+                            );
+                        }
+                    });
+
+                    $.ajax({
+                        url: 'https://translate.googleapis.com/translate_a/single',
+                        method: 'get',
+                        data: {
+                            client: 'gtx',
+                            sl: sourceLang,
+                            tl: targetLang,
+                            dt: 't',
+                            q: text
+                        },
+                        success: function (response) {
+                            //console.log(response[0][0][0]);
+                            $('#translation').append(
+                                '<p class="navbar-text"><span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> ' +
+                                response[0][0][0] +
+                                '</p>'
+                            );
+                        }
+                    });
+                    //console.log(sourceLang, targetLang, text);
                 }
             }
+        };
 
-            $scope.saveToLocalStorage = function () {
-                var serializedJSON = JSON.stringify($scope.resources);
-                localStorage.setItem("translations", serializedJSON)
+        $scope.saveAsJSON = function () {
+
+            const json = {resources: $scope.resources};
+            const serializedJSON = JSON.stringify(json);
+            const filename = "resources";
+            download(filename + ".json", serializedJSON);
+        };
+
+        $scope.saveAsAS = function (column) {
+            if (column !== null) {
+                const xml = converter.toAndroidStudioFormat($scope.resources, column);
+                let xmlText = new XMLSerializer().serializeToString(xml);
+                xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                const filename = "strings";
+                download(filename + ".xml", xmlText);
+                //console.log(column, xmlText);
+            }
+        };
+
+        $scope.saveAsVS = function (column) {
+            if (column !== null) {
+                const xml = converter.toVisualStudioFormat($scope.resources, column);
+                let xmlText = new XMLSerializer().serializeToString(xml);
+                xmlText = '<?xml version="1.0" encoding="utf-8"?>' + xmlText;
+                const filename = "Resources";
+                download(filename + ".resw", xmlText);
+                //console.log(column, xmlText);
+            }
+        };
+
+        $scope.saveToLocalStorage = function () {
+            const serializedJSON = JSON.stringify($scope.resources);
+            localStorage.setItem("translations", serializedJSON)
+        };
+
+        $scope.loadFromLocalStorage = function () {
+            const serializedJSON = localStorage.getItem("translations");
+            if (serializedJSON !== null)
+                console.log(serializedJSON);
+            $scope.resources = JSON.parse(serializedJSON);
+        };
+
+        $scope.share = function () {
+            const json = {resources: $scope.resources};
+            const serializedJSON = JSON.stringify(json);
+            const password = $("#inputPassword2").val();
+
+            const data = {
+                serializedJSON: serializedJSON,
+                password: password,
             };
 
-            $scope.loadFromLocalStorage = function () {
-                var serializedJSON = localStorage.getItem("translations");
-                if (serializedJSON != null)
-                    $scope.resources = JSON.parse(serializedJSON);
-            }
-        }]);
+            $.ajax({
+                url: "/translations",
+                method: "post",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (data, text, xhr) {
+                    const url = xhr.getResponseHeader('Location');
+                    const index = url.lastIndexOf("/");
+                    const id = url.substring(index + 1);
 
-        app.controller('selectCtrl', function ($scope) {
-            $scope.options = [
-                {
-                    "text": "Dodaj język",
-                    "value": ""
+                    alert("ID twojego zasobu to: " + id); //TODO dodaj zeby id sie pokazywalo w jakimś normalnym miejscu, próbowałem w spanie w tamtym dialogu, ale nie działało
                 },
-                {
-                    "text": "angielski",
-                    "value": "en"
-                },
-                {
-                    "text": "francuski",
-                    "value": "fr"
-                },
-                {
-                    "text": "hiszpański",
-                    "value": "es"
-                },
-                {
-                    "text": "niemiecki",
-                    "value": "de"
-                },
-                {
-                    "text": "norweski",
-                    "value": "no"
-                },
-                {
-                    "text": "polski",
-                    "value": "pl"
-                },
-                {
-                    "text": "portugalski",
-                    "value": "pt"
-                },
-                {
-                    "text": "rosyjski",
-                    "value": "ru"
-                },
-                {
-                    "text": "szwedzki",
-                    "value": "sv"
-                },
-                {
-                    "text": "ukraiński",
-                    "value": "uk"
-                },
-                {
-                    "text": "włoski",
-                    "value": "it"
+                error(){
+                    console.log('Error');
                 }
-            ];
-            $scope.selectedItem = $scope.options[0];
-        });
+            })
+        };
 
-        function download(filename, text) {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
+        $scope.loadFromDatabase = function () {
+            const id = $("#inputID").val();
+            const pass = $("#inputPassword").val();
+            let url = "/translations/" + id;
 
-            element.style.display = 'none';
-            document.body.appendChild(element);
+            if (pass !== "") {
+                url = url + "?pass=" + pass;
+            }
 
-            element.click();
-
-            document.body.removeChild(element);
+            $.ajax({
+                url:url,
+                method: "get",
+                contentType: "application/json",
+                dataType: "text",
+                async:false,
+                success: function (data) {
+                    const json = JSON.parse(data);
+                    $scope.resources = json.resources;
+                },
+                error(){
+                    console.log('Error');
+                }
+            })
         }
-    </script>
+    }]);
+
+    app.controller('selectCtrl', function ($scope) {
+        $scope.options = [
+            {
+                "text": "Dodaj język",
+                "value": ""
+            },
+            {
+                "text": "angielski",
+                "value": "en"
+            },
+            {
+                "text": "francuski",
+                "value": "fr"
+            },
+            {
+                "text": "hiszpański",
+                "value": "es"
+            },
+            {
+                "text": "niemiecki",
+                "value": "de"
+            },
+            {
+                "text": "norweski",
+                "value": "no"
+            },
+            {
+                "text": "polski",
+                "value": "pl"
+            },
+            {
+                "text": "portugalski",
+                "value": "pt"
+            },
+            {
+                "text": "rosyjski",
+                "value": "ru"
+            },
+            {
+                "text": "szwedzki",
+                "value": "sv"
+            },
+            {
+                "text": "ukraiński",
+                "value": "uk"
+            },
+            {
+                "text": "włoski",
+                "value": "it"
+            }
+        ];
+        $scope.selectedItem = $scope.options[0];
+    });
+
+    function download(filename, text) {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+</script>
 </body>
 
 </html>
