@@ -24,7 +24,7 @@ var converter = {
             var attr = document.createAttribute('name');
             attr.value = record.name;
             node.setAttributeNode(attr);
-            var childNode = document.createElement('value');
+            var childNode = doc.createElement('value');
             $(childNode).text(record[column]);
             node.appendChild(childNode);
             xml.appendChild(node);
