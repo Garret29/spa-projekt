@@ -19,6 +19,12 @@ public class TranslationData {
     public TranslationData() { //Jpa only
     }
 
+    public TranslationData(Long id, String password, String translationsSerializedJSON) {
+        this.id = id;
+        this.password = password;
+        this.translationsSerializedJSON = translationsSerializedJSON;
+    }
+
     public TranslationData(String password, String translationsSerializedJSON) {
         this.password = password;
         this.translationsSerializedJSON = translationsSerializedJSON;
